@@ -7,7 +7,7 @@ macierz = [[0, 1, 0, 1, 0, 1],
 
 macierz2 = [[1, 1, 0, 1, 0, 1],
             [1, 1, 1, 0, 1, 0],
-            [0, 1, 1, 1, 1, 1],
+            [0, 1, 1, 1, 0, 1],
             [1, 0, 1, 1, 1, 1],
             [0, 1, 0, 1, 1, 1],
             [1, 0, 1, 0, 1, 1]]
@@ -40,6 +40,14 @@ def zera(macierz):
             break
         wybrane[0].add(idx[0])
         wybrane[1].add(idx[1])
+        for j in range(rozmiar):
+            if pomocnicza[idx[0]][j] == 1:
+                col[j] -= 1
+        for i in range(rozmiar):
+            if pomocnicza[i][idx[1]] == 1:
+                row[i] -= 1
+        row[idx[0]] = 0
+        col[idx[1]] = 0
         niezalezne.append(idx)
     return niezalezne
 
