@@ -34,3 +34,23 @@ def wykreslanie(G):
                     zeros_in_rows[zero[0]] -= 1
 
     return (crossed_rows), (crossed_cols)
+
+#sekcja testów
+# graph1 = [
+#     [0,0,1,0,5],
+#     [1,6,2,0,3],
+#     [1,2,1,5,0],
+#     [3,9,0,4,0],
+#     [1,1,2,4,0]
+# ]
+
+# graph2 = [
+#     [0,0,1,0,5],
+#     [0,6,2,0,3],
+#     [0,2,1,5,0],
+#     [0,9,0,4,0],
+#     [0,1,2,4,0]
+# ]
+
+# print(wykreslanie(graph1))
+# print(wykreslanie(graph2))
