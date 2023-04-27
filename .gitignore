@@ -1,7 +1,6 @@
 
-.idea/workspace.xml
-.idea/inspectionProfiles/Project_Default.xml
-.idea/inspectionProfiles/profiles_settings.xml
-.idea/misc.xml
+.idea/
 *.iml
 *.xml
+__pycache__/
+
