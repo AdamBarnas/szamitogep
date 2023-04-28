@@ -1,35 +1,31 @@
 from typing import List
+from main import macierz
+
 
 def reduction(matrix: List[List[int]]):
-    inf = 99999
     el_to_subtract = []
-    row_subraction = matrix.copy()
+    row_subtraction = [[0 for _ in range(len(matrix[0]))] for _ in range(len(matrix))]
     lower_reduction = 0
     for row in range(len(matrix)):
-        min = inf
+        min_val = min(matrix[row])
+        el_to_subtract.append(min_val)
         for col in range(len(matrix)):
-            if matrix[row][col] < min:
-                min = matrix[row][col]
-        el_to_subtract.append(min)
+            row_subtraction[row][col] = matrix[row][col] - min_val
+        lower_reduction += min_val
 
-    for row in range(len(matrix)):
-        for col in range(len(matrix)):
-            row_subraction[row][col] -= el_to_subtract[row]
-            lower_reduction += el_to_subtract[row]
-
-    col_subtraction = row_subraction.copy()
+    col_subtraction = [[0 for _ in range(len(matrix[0]))] for _ in range(len(matrix))]
     el_to_subtract.clear()
 
     for col in range(len(matrix)):
-        min = inf
+        col_vals = [row_subtraction[row][col] for row in range(len(matrix))]
+        min_val = min(col_vals)
+        el_to_subtract.append(min_val)
         for row in range(len(matrix)):
-            if row_subraction[row][col] < min:
-                min = row_subraction[row][col]
-        el_to_subtract.append(min)
+            col_subtraction[row][col] = row_subtraction[row][col] - min_val
+        lower_reduction += min_val
 
-    for col in range(len(matrix)):
-        for row in range(len(matrix)):
-            col_subtraction[row][col] -= el_to_subtract[col]
-            lower_reduction += el_to_subtract[col]
+    return col_subtraction, lower_reduction
 
 
+# col_subtraction, lower_reduction = reduction(macierz)
+# print(col_subtraction, lower_reduction)
