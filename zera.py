@@ -18,15 +18,19 @@ def zera(macierz):
     pomocnicza = [[0 for _ in range(rozmiar)] for _ in range(rozmiar)]
     row = [0 for _ in range(rozmiar)]
     col = [0 for _ in range(rozmiar)]
+    wszystkie = set()
     for i in range(rozmiar):
         for j in range(rozmiar):
             if macierz[i][j] == 0:
                 pomocnicza[i][j] = 1
                 row[i] += 1
                 col[j] += 1
-    idx = [-1, -1]
+                wszystkie.add((i, j))
+    wiersze = row.copy()
+    kolumny = col.copy()
+    idx = (-1, -1)
     wybrane = [set(), set()]
-    niezalezne = []
+    niezalezne = set()
     for _ in range(rozmiar):
         minimum = rozmiar * 2
         changed = False
@@ -34,7 +38,7 @@ def zera(macierz):
             for j in range(rozmiar):
                 if pomocnicza[i][j] == 1 and row[i] + col[j] < minimum and i not in wybrane[0] and j not in wybrane[1]:
                     minimum = row[i] + col[j]
-                    idx = [i, j]
+                    idx = (i, j)
                     changed = True
         if not changed:
             break
@@ -48,9 +52,12 @@ def zera(macierz):
                 row[i] -= 1
         row[idx[0]] = 0
         col[idx[1]] = 0
-        niezalezne.append(idx)
-    return niezalezne
+        niezalezne.add(idx)
+        # zalezne = wszystkie - niezalezne
+    return niezalezne, wszystkie, wiersze, kolumny
 
 
-print(zera(macierz))
-print(zera(macierz2))
+# print(zera(macierz)[0])
+# print(zera(macierz)[1])
+# print(zera(macierz2)[0])
+# print(zera(macierz2)[1])
