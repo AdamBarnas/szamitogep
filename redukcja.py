@@ -1,5 +1,5 @@
 from typing import List
-from main import macierz
+# from main import macierz
 
 
 # funkcja jako parametr przyjmuje macierz, którą będzie redukować
