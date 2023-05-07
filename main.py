@@ -2,12 +2,14 @@ from zera import zera
 from redukcja import reduction
 from wykreslanie import wykreslanie
 from proba import proba
+
 macierz = [[1, 5, 1, 8, 1, 3],
            [4, 3, 7, 3, 6, 3],
            [2, 4, 7, 8, 4, 5],
            [4, 3, 6, 7, 6, 5],
            [4, 7, 5, 6, 6, 9],
            [7, 2, 4, 3, 5, 9]]
+
 
 def algorytm(macierz):
     size = len(macierz)
@@ -23,9 +25,7 @@ def algorytm(macierz):
             niezalezne, wszystkie, wiersze, kolumny = zera(zredukowana)
         return niezalezne, koszt
 
+
 rozwiazanie, koszt = algorytm(macierz)
 print(rozwiazanie)
 print(koszt)
-
-
-
