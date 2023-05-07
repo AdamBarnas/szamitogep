@@ -1,0 +1,5 @@
+Jak jest możliwa minimalna / maksymalna liczba zer niezależnych w macierzy
+zredukowanej?
+
+minimalna ilość zer niezależnych to 2 a maksymalna n dla macierzy o rozmiarze n
+
