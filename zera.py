@@ -15,44 +15,42 @@ macierz2 = [[1, 1, 0, 1, 0, 1],
 
 def zera(macierz):
     rozmiar = len(macierz[0])
-    pomocnicza = [[0 for _ in range(rozmiar)] for _ in range(rozmiar)]
-    row = [0 for _ in range(rozmiar)]
-    col = [0 for _ in range(rozmiar)]
-    wszystkie = set()
-    for i in range(rozmiar):
+    row = [0 for _ in range(rozmiar)]  # lista zliczająca zera w wierszach
+    col = [0 for _ in range(rozmiar)]  # lista zliczająca zera w kolumnach
+    wszystkie = set()  # zbiór współrzędnych zer
+    for i in range(rozmiar):  # pętla znajdująca zera i uzupełniająca listy
         for j in range(rozmiar):
             if macierz[i][j] == 0:
-                pomocnicza[i][j] = 1
                 row[i] += 1
                 col[j] += 1
                 wszystkie.add((i, j))
-    wiersze = row.copy()
+    wiersze = row.copy()  # kopiowanie danch z list aby ich nie naruszyć dalszym działaniem algorytmu
     kolumny = col.copy()
     idx = (-1, -1)
-    wybrane = [set(), set()]
-    niezalezne = set()
-    for _ in range(rozmiar):
+    wybrane = [set(), set()]  # zbiory zawierajace numery wierszy i kolumn zer wybranych jako niezależne
+    niezalezne = set()  # zbiór współrzędnych zer niezależnych
+    for _ in range(rozmiar):  # pętla wywoływana n razy dla znalezienia n zer niezależnych
         minimum = rozmiar * 2
         changed = False
-        for i in range(rozmiar):
+        for i in range(rozmiar):  # pętla znajdująca zero z minimalną sumą liczby innych zer w tej samej kolumnie lub wierszu
             for j in range(rozmiar):
-                if pomocnicza[i][j] == 1 and row[i] + col[j] < minimum and i not in wybrane[0] and j not in wybrane[1]:
+                if macierz[i][j] == 0 and row[i] + col[j] < minimum and i not in wybrane[0] and j not in wybrane[1]:
                     minimum = row[i] + col[j]
                     idx = (i, j)
                     changed = True
-        if not changed:
+        if not changed:  # ewentualne przerwanie pętli w przypadku nieznalezienia kolejnego zera
             break
         wybrane[0].add(idx[0])
         wybrane[1].add(idx[1])
-        for j in range(rozmiar):
-            if pomocnicza[idx[0]][j] == 1:
+        for j in range(rozmiar):   # aktualizacja informacji o liczebności zer w kolumnach
+            if macierz[idx[0]][j] == 0:
                 col[j] -= 1
-        for i in range(rozmiar):
-            if pomocnicza[i][idx[1]] == 1:
+        for i in range(rozmiar):   # aktualizacja informacji o liczebności zer w wierszach
+            if macierz[i][idx[1]] == 0:
                 row[i] -= 1
         row[idx[0]] = 0
         col[idx[1]] = 0
-        niezalezne.add(idx)
+        niezalezne.add(idx)   # dodanie zera do zbioru zer niezależnych
         # zalezne = wszystkie - niezalezne
     return niezalezne, wszystkie, wiersze, kolumny
 
