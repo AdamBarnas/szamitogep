@@ -9,10 +9,20 @@ class Podproblem:
         self.pochodne = children
         self.typ = typ
 
-def krok3(P: Podproblem):
+def krok3(P: Podproblem, old_LB, best):
     if P.typ:
-        P.M[P.ograniczenie[0]][P.ograniczenie[1]] = float("inf")
+        for i in range(len(P.M)):
+            P.M[P.ograniczenie[0]][i] = float("inf")
+        for i in range(len(P.M)):
+            P.M[i][P.ograniczenie[1]] = float("inf")
+        P.M[P.ograniczenie[1]][P.ograniczenie[0]] = float("inf")
         zredukowana, LB = reduction(P.M)
+    else:
+        P.M[P.ograniczenie[1]][P.ograniczenie[0]] = float("inf")
+
+    # sprawdzenie dolnego ograniczenia
+    return "PP"    #"""kolejny problem"""
+
 
 def little(M):
     best = float("inf") # najlepsze znalezione rozwiazanie do tej pory
@@ -24,5 +34,8 @@ def little(M):
     LP.append(Podproblem(zredukowana, odcinek, True, LB))
     while len(LP) > 0:
         podproblem = LP.pop()
-        krok3(podproblem)
+        PP = krok3(podproblem, LB, best)
+        LP.append(PP)
+
+    return best
 
