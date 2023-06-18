@@ -35,7 +35,7 @@ def optymistyczne_wyznaczanie_odc(macierz_zredukowana):
             max_cost =  (min_in_row+min_in_col)
             zero_opt = zero         
 
-    return zero_opt
+    return zero_opt, max_cost
 
 # #test
 # mat1 = [[float("inf"),1,0,2,2],
