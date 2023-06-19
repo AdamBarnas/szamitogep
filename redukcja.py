@@ -9,6 +9,8 @@ def reduction(matrix: List[List[int]]):
     total_reduction = 0  # dolne ograniczenie wartości funkcji celu
     for row in range(len(matrix)):  # przejście po wierszach
         min_val = min(matrix[row])  # najmniejszy element w wierszu
+        if min_val == float("inf"):
+            min_val = 0
         for col in range(len(matrix)):  # przejście po kolejnych elementach wiersza
             row_subtraction[row][col] = matrix[row][col] - min_val
             # nowa macierz po redukcji wierszy
@@ -21,6 +23,8 @@ def reduction(matrix: List[List[int]]):
         col_vals = [row_subtraction[row][col] for row in range(len(matrix))]
         # uzyskanie kolumny
         min_val = min(col_vals)  # najmniejszy element w kolumnie
+        if min_val == float("inf"):
+            min_val = 0
         for row in range(len(matrix)):  # przejście po kolejnych elementach kolumny
             col_subtraction[row][col] = row_subtraction[row][col] - min_val
             # nowa macierz po redukcji kolumn
