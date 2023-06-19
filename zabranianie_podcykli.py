@@ -1,7 +1,8 @@
+import copy
 
-def zabranianie(matrix):
+def zabranianie(matrix, LB):
     min_vals_from_rows = []
-    for row in range(len(matrix)):  # przejście po wierszach
+    for row in range(len(matrix)):
         amount_of_zeros = 0
         min_val = float("inf")
         for col in range(len(matrix[row])):
@@ -29,30 +30,38 @@ def zabranianie(matrix):
                     min_val = matrix[row][col]
 
         min_vals_from_cols.append(min_val)
-
+    first_PP = copy(matrix)
+    second_PP = copy(matrix)
     max_elem_from_rows = max(min_vals_from_rows)
     max_elem_from_cols = max(min_vals_from_cols)
+    # pierwszy PP (wykreślamy, zabraniamy podcyklu, do LB dodajemy wyznaczone maksimum z minimów)
     if max_elem_from_rows >= max_elem_from_cols:
         id_row = max(enumerate(min_vals_from_rows), key=lambda x: x[1])[0]
-        for col in range(len(matrix[id_row])):
-            if matrix[row][col] == 0:
+        for col in range(len(first_PP[id_row])):
+            if first_PP[row][col] == 0:
                 id_col_with_0 = col
                 break
-        for col in range(len(matrix[id_row])):
-            matrix[id_row][col] = float("inf")
-        for row in range(len(matrix[id_col_with_0])):
-            matrix[row][id_col_with_0] = float("inf")
+        for col in range(len(first_PP[id_row])):
+            first_PP[id_row][col] = float("inf")
+        for row in range(len(first_PP[id_col_with_0])):
+            first_PP[row][id_col_with_0] = float("inf")
+        first_PP[id_col_with_0][id_row] = float("inf")
+        LB += max_elem_from_rows
 
     else:
         id_col = max(enumerate(min_vals_from_cols), key=lambda x: x[1])[0]
-        for row in range(len(matrix)):
-            if matrix[row][col] == 0:
+        for row in range(len(first_PP)):
+            if first_PP[row][col] == 0:
                 id_row_with_0 = row
                 break
-        for row in range(len(matrix)):
-            matrix[row][id_col] = float("inf")
-        for col in range(len(matrix)):
-            matrix[id_row_with_0][col] = float("inf")
+        for row in range(len(first_PP)):
+            first_PP[row][id_col] = float("inf")
+        for col in range(len(first_PP)):
+            first_PP[id_row_with_0][col] = float("inf")
+        first_PP[id_col][id_row_with_0] = float("inf")
+        LB += max_elem_from_cols
+
+    #drugi PP (zabraniamy <i*j*>, redukcja, LB)
 
     return matrix
 
