@@ -21,26 +21,28 @@ def optymistyczne_wyznaczanie_odc(macierz_zredukowana):
     for zero in zeros_list:
         min_in_row = float("inf")
         min_in_col = float("inf")
-        #szukanie inimum w wierszu
+        #szukanie minimum w wierszu
         for i in macierz_zredukowana[zero[0]]:
-            if i < min_in_row and i != 0 :
+            if i < min_in_row and i != 0:
                 min_in_row = i
         col = column(macierz_zredukowana, zero[1])
         #szukanie minumum w kolumnie
         for j in col:
-             if j < min_in_col and i != 0 :
-                min_in_col = i 
+             if j < min_in_col and j != 0:
+                min_in_col = j
         #szukany odcinek to max spośrów (min_in_col + min_in_row)
-        if (max_cost < (min_in_row+min_in_col)):
-            max_cost =  (min_in_row+min_in_col)
+        if max_cost < (min_in_row+min_in_col) and (min_in_row+min_in_col) != float('inf'):
+            max_cost = (min_in_row+min_in_col)
             zero_opt = zero         
 
     return zero_opt, max_cost
 
 # #test
+# import numpy as np
 # mat1 = [[float("inf"),1,0,2,2],
 #        [3,float("inf"),2,0,1],
 #        [1,2,float("inf"),2,0],
 #        [4,0,3,float("inf"),4],
 #        [0,2,7,0,float("inf")]]
-#print(optymistyczne_wyznaczanie_odc(mat1))
+# print(np.array(mat1))
+# print(optymistyczne_wyznaczanie_odc(mat1))

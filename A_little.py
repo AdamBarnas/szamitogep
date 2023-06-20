@@ -1,4 +1,8 @@
 from redukcja import reduction
+import optymistyczne_wyznaczenie_odc as owo
+from zabranianie_podcykli import zabranianie
+from kryteria_zamykania import rozmiar, kryteria_zamykania
+import numpy as np
 
 class Podproblem:
     def init(self, macierz, ograniczenie, typ, LB=float("inf"), parent=None, children=[]):
@@ -25,11 +29,12 @@ def krok3(P: Podproblem, old_LB, best):
 
 
 def little(M):
-    best = float("inf") # najlepsze znalezione rozwiazanie do tej pory
+    best = float("inf")  # najlepsze znalezione rozwiazanie do tej pory
     zredukowana, LB = reduction(M)
     LP = []  # listapodproblemow
     #optymistyczne wyznaczanie odcinka
-    odcinek = None   # wyznaczanie(zredukowana)
+
+    odcinek, koszt = owo.optymistyczne_wyznaczanie_odc(zredukowana)
     LP.append(Podproblem(zredukowana, odcinek, False, LB))
     LP.append(Podproblem(zredukowana, odcinek, True, LB))
     while len(LP) > 0:
