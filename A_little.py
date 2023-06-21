@@ -18,7 +18,7 @@ class Podproblem:
 
 
 def krok3(P: Podproblem):
-    if P.typ:
+    if P.typ: # zabranianie w wierszach i kolumnach oraz powrotu
         for i in range(len(P.M)):
             P.M[P.wybrane[-1][0]][i] = float("inf")
         for i in range(len(P.M)):
@@ -26,8 +26,8 @@ def krok3(P: Podproblem):
         P.M[P.wybrane[-1][1]][P.wybrane[-1][0]] = float("inf")
         zabranianie(P.M, P.wybrane)
     else:
-        P.M[P.zabronione[-1][0]][P.zabronione[-1][1]] = float("inf")
-    P.M, LB = reduction(P.M)
+        P.M[P.zabronione[-1][0]][P.zabronione[-1][1]] = float("inf") # zabranianie wykluczonego odcinka
+    P.M, LB = reduction(P.M)  #ponowna redukcja i uaktualnienie LB
     P.LB += LB
     return P  # zmienione parametry podproblemu
 
@@ -40,23 +40,17 @@ def little(M):
     odcinek1, koszt = owo.optymistyczne_wyznaczanie_odc(zredukowana)
     m1 = copy.deepcopy(zredukowana)
     m2 = copy.deepcopy(zredukowana)
-    LP.append(krok3(Podproblem(m1, LB, [odcinek1], [], True)))
+    LP.append(krok3(Podproblem(m1, LB, [odcinek1], [], True))) # podział na podproblemy
     LP.append(krok3(Podproblem(m2, LB, [], [odcinek1], False)))
     while len(LP) > 0:
-        minlb = float('inf')
+        minlb = float('inf') #wybor kolejnego podproblemu z listy
         for pp in LP:
             if pp.LB < minlb:
                 minlb = pp.LB
                 podproblem = pp
         LP.remove(podproblem)
-        KZ = kryteria_zamykania(podproblem.M, best, podproblem.LB)
-        # print()
-        # print(owo.find_zeros(podproblem.M))
-        # print(np.array(podproblem.M))
-        # print(podproblem.wybrane)
-        # print(podproblem.zabronione)
-        # print()
-        if KZ == "KZ0":
+        KZ = kryteria_zamykania(podproblem.M, best, podproblem.LB) # proba zamkniecia podproblemu
+        if KZ == "KZ0":   # problem niezamykany rozdzielany na 2
             odcinek, koszt = owo.optymistyczne_wyznaczanie_odc(podproblem.M)
             wybrane = podproblem.wybrane.copy()
             zabronione = podproblem.zabronione.copy()
@@ -64,7 +58,7 @@ def little(M):
             m4 = copy.deepcopy(podproblem.M)
             LP.append(krok3(Podproblem(m3, podproblem.LB, wybrane + [odcinek], zabronione, True)))
             LP.append(krok3(Podproblem(m4, podproblem.LB, wybrane, zabronione + [odcinek], False)))
-        elif KZ == "KZ3":
+        elif KZ == "KZ3":   # problem zakonczony sprawdzanie rozwiazania
             wolnezera = owo.find_zeros(podproblem.M)
             for i in wolnezera:
                 for j in wolnezera:
@@ -73,7 +67,7 @@ def little(M):
                             podproblem.wybrane.append(i)
                         if j not in podproblem.wybrane:
                             podproblem.wybrane.append(j)
-            if len(zabranianie(podproblem.M, podproblem.wybrane)) == len(M):
+            if len(zabranianie(podproblem.M, podproblem.wybrane)) == len(M): # rozwiazanie dopuszczalne, poprawa ogolnego LB
                 print("zamykamy KZ3")
                 print(np.array(podproblem.M))
                 print(zabranianie(podproblem.M, podproblem.wybrane))
@@ -81,15 +75,15 @@ def little(M):
                 print(podproblem.zabronione)
                 if best > podproblem.LB:
                     best = podproblem.LB
-            else:
+            else:  # rozwiazanie niedopuszczalne
                 print("zamykamy KZ1")
 
-        elif KZ == "KZ2":
+        elif KZ == "KZ2":    # LB wieksze niż najlepsze dotychczas znalezione rozwiazanie
             print("zamykamy KZ2")
             print(podproblem.LB)
             print(podproblem.wybrane)
             print(podproblem.zabronione)
-        else:
+        else:      # w razie czego
             print("error")
             break
 

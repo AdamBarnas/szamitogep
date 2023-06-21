@@ -1,8 +1,8 @@
 def zabranianie(macierz, wybrane):
-    for i, odcinek1 in enumerate(wybrane):
+    for i, odcinek1 in enumerate(wybrane):   # zaczynamy od każdego odcinka, żeby uwzględnić wszystkie pętle
         part = [odcinek1[0], odcinek1[1]]
         zmiana = True
-        while zmiana:
+        while zmiana:  # jeśli po przejściu przez wszystkie odcinki nie zostanie dołączony kolejny to przerywamy pętlę
             zmiana = False
             for j, odcinek2 in enumerate(wybrane):
                 if i == j:
@@ -14,9 +14,9 @@ def zabranianie(macierz, wybrane):
                     elif odcinek2[0] == part[-1] and odcinek2[1] not in part:
                         part.append(odcinek2[1])
                         zmiana = True
-        if len(part) < len(macierz):
+        if len(part) < len(macierz):     # w przypadku gdy cykl nie jest cyklem hamiltona zabraniamy go
             macierz[part[0]][part[-1]] = float('inf')
-        return part
+    return part         # zwracamy ścieżkę
             # print(part)
 
 # import numpy as np
