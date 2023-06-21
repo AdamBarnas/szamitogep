@@ -16,7 +16,7 @@ def kryteria_zamykania(macierz_podrpoblem, LB_min, LB_podproblem):
     # jeśli rozmiar macierzy = 2
     if rozmiar(macierz=macierz_podrpoblem) == 2:
         KZ = "KZ3"
-    elif LB_min >= LB_podproblem:
+    elif LB_min <= LB_podproblem:
         KZ = "KZ2"
     return KZ
         

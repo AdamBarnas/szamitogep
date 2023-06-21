@@ -37,12 +37,16 @@ def optymistyczne_wyznaczanie_odc(macierz_zredukowana):
 
     return zero_opt, max_cost
 
-# #test
+#test
 # import numpy as np
 # mat1 = [[float("inf"),1,0,2,2],
 #        [3,float("inf"),2,0,1],
 #        [1,2,float("inf"),2,0],
 #        [4,0,3,float("inf"),4],
 #        [0,2,7,0,float("inf")]]
-# print(np.array(mat1))
-# print(optymistyczne_wyznaczanie_odc(mat1))
+#
+# mat2 = [[float('inf'), 0, float('inf')],
+#         [0, float('inf'), float('inf')],
+#         [float('inf'), float('inf'), float('inf')]]
+# print(np.array(mat2))
+# print(optymistyczne_wyznaczanie_odc(mat2))
