@@ -1,0 +1,9 @@
+chyba mam pomysł na problem na BO:
+Zakupy w Auchan
+-mamy kupić określone rzeczy ustawione w określonych miejscach
+-mamy to zrobić w jak najmniejszym dystansie
+-bierzemy pod uwagę też jak bardzo się zmęczymy przy tym (niesiona masa x długość trasy)
+-potencjalna możliwość użycia algorytmu mrówkowego
+
+można by zrobić to w miarę na planie a potem tylko zebrać współrzędne, 
+połaczyć metryką ulic (L=|x1-x2|+|y1-y2|)
