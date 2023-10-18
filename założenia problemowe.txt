@@ -9,3 +9,11 @@ można by zrobić to w miarę na planie a potem tylko zebrać współrzędne,
 połaczyć metryką ulic (L=|x1-x2|+|y1-y2|)
 
 funkcja celu: suma po wszystkich odcinkach( masa niesiona na danym odcinku * długość odcinka)
+
+zakupy przez tydzień? czy bardziej się opłaca jedne duże czy kilka razy po trochu
+priorytety do produktów jeśli nie za jednym razem
+musimy kupić wszysytkie przedmioty z listy
+
+minimalna masa: masa koszyka
+każde wyjście do sklepu to wydatek energetyczny
+maksymalne zmęczenie?
