@@ -7,3 +7,5 @@ Zakupy w Auchan
 
 można by zrobić to w miarę na planie a potem tylko zebrać współrzędne, 
 połaczyć metryką ulic (L=|x1-x2|+|y1-y2|)
+
+funkcja celu: suma po wszystkich odcinkach( masa niesiona na danym odcinku * długość odcinka)
