@@ -14,7 +14,8 @@ coords_t = tuple[float, float]
 LZ = []
 #state list
 LS = []
-
+#decision list
+DL = []
 class State:
     def __init__(self, B: list, mass: int, coords: coords_t, L: float, F: float) -> None:
         self.B = B #list of items in a basket
