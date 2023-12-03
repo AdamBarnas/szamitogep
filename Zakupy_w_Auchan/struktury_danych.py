@@ -2,30 +2,35 @@ import typing
 import numpy as np
 import matplotlib.pyplot as plt
 
+#types
+coords_t = tuple[float, float]
+
 #constans
-m0 = 0.5  #masa pustego koszyka
+m0 = 0.5  #empty basket mass
 c_l = 1   #destination function distance constant
 c_f = 1   #destination function fatigue constant
 L0 = 500  #distance to the shop
 F0 = 100  #fatigue of getting to the shop
+entry_coords1 = (7, 765)
+entry_coords2 = (7, 38)
 
-#types
-coords_t = tuple[float, float]
+exit_coords1 = (7, 55)
+exit_coords2 = (7, 610)
 
-#shopping list
-LZ = []
+# #shopping list
+# LZ = []
 
-#state list
-LS = []
+# #state list
+# LS = []
 
-#decision list
-DL = []
+# #decision list
+# DL = []
 
-#adjacency matrix
-AM = [[]]
+# #adjacency matrix
+# AM = [[]]
 
-#feromone matrix
-FM = [[]]
+# #feromone matrix
+# FM = [[]]
 
 class State:
     def __init__(self, B: list, mass: int, coords: coords_t, L: float, F: float) -> None:
@@ -98,10 +103,12 @@ def transfer_function(S: State, D: Product):
 def calculate_adjacency_matrix(LZ: list[Product]) -> list[list[float]]:
     N = len(LZ)
     AM = [[calculate_distance(LZ[i], LZ[j]) for i in range(N)] for j in range(N)]
-    return AM
-    
-def print_matrix(M) -> None:
-    print(np.array(M))
+    return np.array(AM)
+
+def create_feromone_matrix(LZ: list[Product]):
+    N = len(LZ)
+    FM = np.ones(N,)
+    return FM
 
 def show_points(LZ: list[Product]) -> None:
     x_coords = []
@@ -109,7 +116,8 @@ def show_points(LZ: list[Product]) -> None:
     for product in LZ:
         x_coords.append(product.coords[0])
         y_coords.append(product.coords[1])
-    
+    img = plt.imread("Zakupy_w_Auchan\wymiary.png")
     plt.scatter(x_coords, y_coords)
+    plt.imshow(img)
     plt.show()
     
