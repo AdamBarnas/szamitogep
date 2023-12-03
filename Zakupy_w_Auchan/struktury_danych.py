@@ -1,16 +1,21 @@
 import typing
 import numpy as np
 import matplotlib.pyplot as plt
+from random import random
 
-#types
+# types
 coords_t = tuple[float, float]
 
-#constans
-m0 = 0.5  #empty basket mass
-c_l = 1   #destination function distance constant
-c_f = 1   #destination function fatigue constant
-L0 = 500  #distance to the shop
-F0 = 100  #fatigue of getting to the shop
+# constants
+m0 = 0.5  # empty basket mass
+c_dist = 1   # destination function distance constant
+c_fat = 1   # destination function fatigue constant
+a_dist = 1   # distance constant
+a_fer = 1   # feromone constant
+evoporation = 0.5 # feromone evaporation constant
+L0 = 500  # distance to the shop
+F0 = 100  # fatigue of getting to the shop
+
 entry_coords1 = (7, 765)
 entry_coords2 = (7, 38)
 
@@ -47,7 +52,7 @@ class State:
         self.F = F #fatigue
     
     def destination_function(self) -> float: #calculate how easy it was to do the shopping
-        ret_val = self.L * c_l + self.F * c_f
+        ret_val = self.L * c_dist + self.F * c_fat
         return ret_val
 
 class Product:
@@ -61,18 +66,47 @@ class Product:
         napis = self.name + "\nID:" + str(self.ID) + "\nmass: " + str(self.mass) + "kg\n" + "coords: " + str(self.coords)
         return napis
     
-# class Decision:
-#     def __init__(self, item: Product) -> None:
-#         self.ID = item.ID #selected product ID
-#         self.mass = item.mass #selected product mass
-#         self.coords = item.coords #selected product coordinates
-
 class Ant:
     def __init__(self, item: Product) -> None:
-        self.visited = [item] #items collected
+        self.ID = item.ID
+        self.visited = [item.ID] #items collected
+        self.coords = item.coords
 
-    def choose_next_product(self, LZ) -> Product:
-        pass
+    def goto_next_product(self, p: Product) -> None:
+        self.visited.append(p.ID)
+        self.coords = p.coords
+
+    def choose_next_product(self, AM: np.ndarray, FM: np.ndarray) -> int:
+        last_p_id = self.visited[-1]
+        sum_cost = 0.0
+        cost_list = []
+        for id in range(AM.size):
+            if id in self.visited:
+                cost_list.append(0)
+            else:
+                val = 1/(a_dist*AM[last_p_id, id] + a_fer*FM[last_p_id, id])
+                cost_list.append(val + sum_cost)
+                sum_cost += val
+        rand_val = random() * sum_cost
+
+        id = 0
+        while cost_list[id] < rand_val:
+            id += 1
+        
+        return id
+
+        
+        
+        
+
+    def __str__(self) -> str:
+        return "Ant: " + str(self.ID) + "\nVisited: " + str(self.visited) + "\nPosition: " + str(self.coords)
+
+def create_ant_list(LZ: list[Product]) -> list[Ant]:
+    AL = []
+    for product in LZ:
+        AL.append(Ant(product))
+    return AL
 
 def calculate_distance(p1: Product, p2: Product) -> float:
     coords1 = p1.coords
@@ -102,12 +136,17 @@ def transfer_function(S: State, D: Product):
 
 def calculate_adjacency_matrix(LZ: list[Product]) -> list[list[float]]:
     N = len(LZ)
-    AM = [[calculate_distance(LZ[i], LZ[j]) for i in range(N)] for j in range(N)]
+    AM = np.zeros([N,N])
+    
+    for i in range(N):
+        for j in range(N):
+            AM[i, j] = calculate_distance(LZ[i], LZ[j])
+
     return np.array(AM)
 
 def create_feromone_matrix(LZ: list[Product]):
     N = len(LZ)
-    FM = np.ones(N,)
+    FM = np.ones([N,N])
     return FM
 
 def show_points(LZ: list[Product]) -> None:
