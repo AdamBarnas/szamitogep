@@ -1,4 +1,6 @@
 import typing
+import numpy as np
+import matplotlib.pyplot as plt
 
 #constans
 m0 = 0.5  #masa pustego koszyka
@@ -12,10 +14,19 @@ coords_t = tuple[float, float]
 
 #shopping list
 LZ = []
+
 #state list
 LS = []
+
 #decision list
 DL = []
+
+#adjacency matrix
+AM = [[]]
+
+#feromone matrix
+FM = [[]]
+
 class State:
     def __init__(self, B: list, mass: int, coords: coords_t, L: float, F: float) -> None:
         self.B = B #list of items in a basket
@@ -41,13 +52,26 @@ class Product:
         self.coords = coords #product coordinates
         self.name = name #product name
 
-class Decision:
-    def __init__(self, item: Product) -> None:
-        self.ID = item.ID #selected product ID
-        self.mass = item.mass #selected product mass
-        self.coords = item.coords #selected product coordinates
+    def __str__(self) -> str:
+        napis = self.name + "\nID:" + str(self.ID) + "\nmass: " + str(self.mass) + "kg\n" + "coords: " + str(self.coords)
+        return napis
+    
+# class Decision:
+#     def __init__(self, item: Product) -> None:
+#         self.ID = item.ID #selected product ID
+#         self.mass = item.mass #selected product mass
+#         self.coords = item.coords #selected product coordinates
 
-def calculate_distance(coords1: coords_t, coords2: coords_t) -> float:
+class Ant:
+    def __init__(self, item: Product) -> None:
+        self.visited = [item] #items collected
+
+    def choose_next_product(self, LZ) -> Product:
+        pass
+
+def calculate_distance(p1: Product, p2: Product) -> float:
+    coords1 = p1.coords
+    coords2 = p2.coords
     distance = 0
     for i in range(len(coords1)):
         distance += abs(coords1[i] - coords2[i])
@@ -56,7 +80,7 @@ def calculate_distance(coords1: coords_t, coords2: coords_t) -> float:
 def calculate_fatigue(distance, mass) -> float:
     return distance * mass
 
-def transfer_function(S: State, D: Decision):
+def transfer_function(S: State, D: Product):
     B = S.B
     if D.ID not in B:
         B.append(D.ID)
@@ -65,8 +89,27 @@ def transfer_function(S: State, D: Decision):
         return None
     mass = S.mass + D.mass
     coords = D.coords
-    distance = calculate_distance(S.coords, D.coords)
+    distance = calculate_distance(S, D)
     L = S.L + distance
     F = S.F + calculate_fatigue(distance, S.mass)
     newstate = State(B, mass, coords, L, F)
     return newstate
+
+def calculate_adjacency_matrix(LZ: list[Product]) -> list[list[float]]:
+    N = len(LZ)
+    AM = [[calculate_distance(LZ[i], LZ[j]) for i in range(N)] for j in range(N)]
+    return AM
+    
+def print_matrix(M) -> None:
+    print(np.array(M))
+
+def show_points(LZ: list[Product]) -> None:
+    x_coords = []
+    y_coords = []
+    for product in LZ:
+        x_coords.append(product.coords[0])
+        y_coords.append(product.coords[1])
+    
+    plt.scatter(x_coords, y_coords)
+    plt.show()
+    
