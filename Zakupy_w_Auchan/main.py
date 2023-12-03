@@ -16,7 +16,7 @@ def ant_algorithm(LZ: list[sd.Product]) -> list[sd.Ant]:
 def main() -> None:
     db = Database()
 
-    shop_entry = sd.Product(0, sd.m0, sd.entry_coords1, "Wejście")
+    shop_entry = sd.Product(0, sd.m0, sd.entry_coords1, "ENTER")
 
     LZ = [shop_entry]
     for i in range(50):
@@ -28,7 +28,7 @@ def main() -> None:
     # print(AM)
 
     FM = sd.create_feromone_matrix(LZ)
-    print(FM.size)
+    print(FM.shape[0])
 
     cost_list = np.ones([5,])
     print(cost_list/2)

@@ -7,14 +7,15 @@ from random import random
 coords_t = tuple[float, float]
 
 # constants
-m0 = 0.5  # empty basket mass
+m0 = 0 # 0.5  # empty basket mass
 c_dist = 1   # destination function distance constant
 c_fat = 1   # destination function fatigue constant
 a_dist = 1   # distance constant
 a_fer = 1   # feromone constant
 evoporation = 0.5 # feromone evaporation constant
-L0 = 500  # distance to the shop
-F0 = 100  # fatigue of getting to the shop
+feromone_amount = 10 # feromone amount left on whole trail
+L0 = 0 # 500  # distance to the shop
+F0 = 0 # 100  # fatigue of getting to the shop
 
 entry_coords1 = (7, 765)
 entry_coords2 = (7, 38)
@@ -75,6 +76,7 @@ class Ant:
     def goto_next_product(self, p: Product) -> None:
         self.visited.append(p.ID)
         self.coords = p.coords
+        return None
 
     def choose_next_product(self, AM: np.ndarray, FM: np.ndarray) -> int:
         last_p_id = self.visited[-1]
@@ -92,13 +94,43 @@ class Ant:
         id = 0
         while cost_list[id] < rand_val:
             id += 1
-        
+
         return id
 
-        
-        
-        
+    def arrange_visited(self) -> None:
+        N = len(self.visited)
+        count = 0
 
+        while self.visited[count] != 0:
+            count += 1
+
+        arranged = []
+
+        for i in range(count, N):
+            arranged.append(self.visited[i])
+        for i in range(count):
+            arranged.append(self.visited[i])
+
+        self.visited = arranged
+        return None
+    
+    def calculate_destination_function(self, LZ: list[Product]) -> float:
+        self.arrange_visited()
+        N = len(LZ)
+        distance_walked = L0
+        fatigue =  F0
+        for i in range(len(self.visited) - 1):
+            if self.visited[id] == N:
+                #end
+                pass
+            else:
+                pass
+
+    def leave_feromone_trail(self, FM: np.ndarray) -> None:
+        pass
+
+                
+        
     def __str__(self) -> str:
         return "Ant: " + str(self.ID) + "\nVisited: " + str(self.visited) + "\nPosition: " + str(self.coords)
 
@@ -109,10 +141,20 @@ def create_ant_list(LZ: list[Product]) -> list[Ant]:
     return AL
 
 def calculate_distance(p1: Product, p2: Product) -> float:
-    coords1 = p1.coords
-    coords2 = p2.coords
+    if p2.name == "EXIT" and p1.coords[1] < 55:
+        coords1 = p1.coords
+        coords2 = exit_coords1
+    elif p2.name == "EXIT" and p1.coords[1] > 610:
+        coords1 = p1.coords
+        coords2 = exit_coords2
+    elif p2.name == "EXIT":
+        coords1 = p1.coords
+        coords2 = (exit_coords1[0], p1.coords[1])
+    else:
+        coords1 = p1.coords
+        coords2 = p2.coords
     distance = 0
-    for i in range(len(coords1)):
+    for i in range(2):
         distance += abs(coords1[i] - coords2[i])
     return distance
 
