@@ -50,7 +50,7 @@ def main() -> None:
     # shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, exit_name)
 
     LZ = [sd.shop_entry]
-    for i in range(50):
+    for i in range(15):
         LZ.append(db.get_productinfo(i+1))
     LZ.append(sd.shop_exit)
     # for product in LZ:
