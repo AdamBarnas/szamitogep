@@ -117,14 +117,15 @@ class Ant:
     def calculate_destination_function(self, LZ: list[Product]) -> float:
         self.arrange_visited()
         N = len(LZ)
-        distance_walked = L0
-        fatigue =  F0
+        total_distance = 0
+        total_fatigue = 0
+        total_mass = 0
         for i in range(len(self.visited) - 1):
-            if self.visited[id] == N:
-                #end
-                pass
-            else:
-                pass
+            total_mass += LZ[self.visited[i]].mass
+            distance = calculate_distance(LZ[self.visited[i]], LZ[self.visited[i+1]])
+            total_distance += distance
+            total_fatigue += calculate_fatigue(distance, total_mass)
+        return total_distance * c_dist + total_fatigue * c_fat
 
     def leave_feromone_trail(self, FM: np.ndarray) -> None:
         pass
@@ -201,4 +202,4 @@ def show_points(LZ: list[Product]) -> None:
     plt.scatter(x_coords, y_coords)
     plt.imshow(img)
     plt.show()
-    
+    return None

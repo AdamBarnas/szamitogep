@@ -35,6 +35,17 @@ class TestAnt:
         ant.goto_next_product(shop_entry)
         ant.arrange_visited()
         assert ant.visited == [0, 3, 1, 2]
+
+    def test_calculate_destination_function(self):
+        shop_entry = sd.Product(0, 1, (0, 0), "ENTER")
+        product_1 = sd.Product(1, 1, (1, 1), "1")
+        product_2 = sd.Product(2, 0, (2, 2), "2")
+        LZ = [shop_entry, product_1, product_2]
+        ant = sd.Ant(product_1)
+        ant.goto_next_product(product_2)
+        ant.goto_next_product(shop_entry)
+        dest_fun = ant.calculate_destination_function(LZ)
+        assert dest_fun == 10
     
 def test_create_feromone_matrix():
     db = Database()
