@@ -12,11 +12,11 @@ class TestAnt:
         ant.goto_next_product(product_2)
         assert ant.visited == [1, 2]
 
-    def test_choose_next_product(self):
-        shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, "ENTER")
+    def test_choose_next_product_1(self):
+        shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, sd.entry_name)
         product_1 = sd.Product(1, 1, (1, 1), "1")
         product_2 = sd.Product(2, 2, (2, 2), "2")
-        shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, "EXIT")
+        shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, sd.exit_name)
         LZ = [shop_entry, product_1, product_2, shop_exit]
         AM = sd.calculate_adjacency_matrix(LZ)
         FM = sd.create_feromone_matrix(LZ)
@@ -24,8 +24,18 @@ class TestAnt:
         id = ant.choose_next_product(AM, FM, 0.5)
         assert id == 2
 
+    def test_choose_next_product_2(self):
+        shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, sd.entry_name)
+        product_1 = sd.Product(1, 1, (1, 1), "1")
+        LZ = [shop_entry, product_1]
+        AM = sd.calculate_adjacency_matrix(LZ)
+        FM = sd.create_feromone_matrix(LZ)
+        ant = sd.Ant(product_1)
+        id = ant.choose_next_product(AM, FM, 0.5)
+        assert id == None
+
     def test_Ant_arrange_visited_1(self):
-        shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, "ENTER")
+        shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, sd.entry_name)
         product_1 = sd.Product(1, 1, (1, 1), "1")
         product_2 = sd.Product(2, 2, (2, 2), "2")
         product_3 = sd.Product(3, 3, (3, 3), "3")
@@ -37,7 +47,7 @@ class TestAnt:
         assert ant.visited == [0, 1, 3, 2]
 
     def test_Ant_arrange_visited_2(self):
-        shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, "ENTER")
+        shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, sd.entry_name)
         product_1 = sd.Product(1, 1, (1, 1), "1")
         product_2 = sd.Product(2, 2, (2, 2), "2")
         product_3 = sd.Product(3, 3, (3, 3), "3")
@@ -49,11 +59,11 @@ class TestAnt:
         assert ant.visited == [0, 3, 1, 2]
 
     def test_Ant_arrange_visited_3(self):
-        shop_entry = sd.Product(sd.entry_ID, 1, sd.entry_coords1, "ENTER")
+        shop_entry = sd.Product(sd.entry_ID, 1, sd.entry_coords1, sd.entry_name)
         product_1 = sd.Product(1, 2, (10, 10), "1")
         product_2 = sd.Product(2, 2, (20, 20), "2")
         product_3 = sd.Product(3, 3, (30, 30), "3")
-        shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, "EXIT")
+        shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, sd.exit_name)
         LZ = [shop_entry, product_1, product_2, product_3, shop_exit]
         AM = sd.calculate_adjacency_matrix(LZ)
         ant = sd.Ant(product_1)
@@ -64,7 +74,7 @@ class TestAnt:
         assert ant.visited == [0, 3, 1, 2, -1]
 
     def test_calculate_destination_function_1(self):
-        shop_entry = sd.Product(sd.entry_ID, 1, (0, 0), "ENTER")
+        shop_entry = sd.Product(sd.entry_ID, 1, (0, 0), sd.entry_name)
         product_1 = sd.Product(1, 1, (1, 1), "1")
         product_2 = sd.Product(2, 0, (2, 2), "2")
         LZ = [shop_entry, product_1, product_2]
@@ -76,11 +86,11 @@ class TestAnt:
         assert ant.dest_fun == 10
 
     def test_calculate_destination_function_2(self):
-        shop_entry = sd.Product(sd.entry_ID, 1, sd.entry_coords1, "ENTER")
+        shop_entry = sd.Product(sd.entry_ID, 1, sd.entry_coords1, sd.entry_name)
         product_1 = sd.Product(1, 2, (10, 10), "1")
         product_2 = sd.Product(2, 2, (20, 20), "2")
         product_3 = sd.Product(3, 3, (30, 30), "3")
-        shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, "EXIT")
+        shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, sd.exit_name)
         LZ = [shop_entry, product_1, product_2, product_3, shop_exit]
         AM = sd.calculate_adjacency_matrix(LZ)
         ant = sd.Ant(product_1)
@@ -93,7 +103,7 @@ class TestAnt:
 def test_create_feromone_matrix():
     db = Database()
 
-    shop_entry = sd.Product(0, sd.M0, sd.entry_coords1, "ENTER")
+    shop_entry = sd.Product(0, sd.M0, sd.entry_coords1, sd.entry_name)
 
     LZ = [shop_entry]
     for i in range(10):
@@ -108,7 +118,7 @@ def test_create_feromone_matrix():
 def test_calculate_adjacency_matrix():
     db = Database()
 
-    shop_entry = sd.Product(0, sd.M0, sd.entry_coords1, "ENTER")
+    shop_entry = sd.Product(0, sd.M0, sd.entry_coords1, sd.entry_name)
 
     LZ = [shop_entry]
     for i in range(10):
