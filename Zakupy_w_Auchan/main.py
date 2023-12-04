@@ -1,6 +1,7 @@
 import numpy as np
 from baza import Database
 import struktury_danych as sd
+from gui_output import show_points
 
 def ant_algorithm(LZ: list[sd.Product]) -> list[sd.Ant]:
     N = len(LZ)
@@ -8,15 +9,19 @@ def ant_algorithm(LZ: list[sd.Product]) -> list[sd.Ant]:
     FM = sd.create_feromone_matrix(LZ)
     AL = sd.create_ant_list(LZ)
 
-    for ant in AL: #single iteration over all ants
-        pass
+    for iter in range(N-1): # number of passes to do single pass through whole shop
+
+        for ant in AL: # all ants move once
+            ID = ant.choose_next_product
+            ant.goto_next_product(LZ[ID])
+    
 
     return AL
 
 def main() -> None:
     db = Database()
 
-    shop_entry = sd.Product(0, sd.m0, sd.entry_coords1, "ENTER")
+    shop_entry = sd.Product(0, sd.M0, sd.entry_coords1, "ENTER")
     shop_exit = sd.Product(-1, 0, sd.exit_coords1, "EXIT")
 
     LZ = [shop_entry]
@@ -35,7 +40,7 @@ def main() -> None:
     cost_list = np.ones([5,])
     print(cost_list/2)
 
-    # sd.show_points(LZ)
+    # show_points(LZ)
     return None
 
 main()

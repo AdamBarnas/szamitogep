@@ -7,19 +7,21 @@ from random import random
 coords_t = tuple[float, float]
 
 # constants
-m0 = 0 # 0.5  # empty basket mass
-c_dist = 1   # destination function distance constant
-c_fat = 1   # destination function fatigue constant
-a_dist = 1   # distance constant
-a_fer = 1   # feromone constant
-evoporation = 0.5 # feromone evaporation constant
-feromone_amount = 10 # feromone amount left on whole trail
+M0 = 0 # 0.5  # empty basket mass
+C_dist = 1   # destination function distance constant
+C_fat = 1   # destination function fatigue constant
+A_dist = 1   # distance constant
+A_fer = 1   # feromone constant
+Evap = 0.5 # feromone evaporation constant
+Fero_amount = 10 # feromone amount left on trail segment to be devided by destination function value
 L0 = 0 # 500  # distance to the shop
 F0 = 0 # 100  # fatigue of getting to the shop
 
+entry_ID = 0
 entry_coords1 = (7, 765)
 entry_coords2 = (7, 38)
 
+exit_ID = -1
 exit_coords1 = (7, 55)
 exit_coords2 = (7, 610)
 
@@ -42,7 +44,7 @@ class State:
     def __init__(self, B: list, mass: int, coords: coords_t, L: float, F: float) -> None:
         self.B = B #list of items in a basket
         if mass == 0:
-            mass = m0
+            mass = M0
             for item in self.B:
                 mass += item.mass
         self.mass = mass #mass of basket and items inside
@@ -53,7 +55,7 @@ class State:
         self.F = F #fatigue
     
     def destination_function(self) -> float: #calculate how easy it was to do the shopping
-        ret_val = self.L * c_dist + self.F * c_fat
+        ret_val = self.L * C_dist + self.F * C_fat
         return ret_val
 
 class Product:
@@ -72,24 +74,29 @@ class Ant:
         self.ID = item.ID
         self.visited = [item.ID] #items collected
         self.coords = item.coords
+        self.dest_fun = None
 
     def goto_next_product(self, p: Product) -> None:
         self.visited.append(p.ID)
-        self.coords = p.coords
+        if p.name == "EXIT":
+            self.visited.append(entry_ID)
+            self.coords = entry_coords1
+        else:
+            self.coords = p.coords
         return None
 
-    def choose_next_product(self, AM: np.ndarray, FM: np.ndarray) -> int:
+    def choose_next_product(self, AM: np.ndarray, FM: np.ndarray, rand: float =random()) -> int:
         last_p_id = self.visited[-1]
         sum_cost = 0.0
         cost_list = []
-        for id in range(AM.size):
-            if id in self.visited:
+        for id in range(AM.shape[0]):
+            if id in self.visited or id == entry_ID:
                 cost_list.append(0)
             else:
-                val = 1/(a_dist*AM[last_p_id, id] + a_fer*FM[last_p_id, id])
+                val = 1/(A_dist*AM[last_p_id, id] + A_fer*FM[last_p_id, id])
                 cost_list.append(val + sum_cost)
                 sum_cost += val
-        rand_val = random() * sum_cost
+        rand_val = rand * sum_cost
 
         id = 0
         while cost_list[id] < rand_val:
@@ -114,7 +121,7 @@ class Ant:
         self.visited = arranged
         return None
     
-    def calculate_destination_function(self, LZ: list[Product]) -> float:
+    def calculate_destination_function(self, LZ: list[Product], AM: np.ndarray) -> None:
         self.arrange_visited()
         N = len(LZ)
         total_distance = 0
@@ -122,13 +129,16 @@ class Ant:
         total_mass = 0
         for i in range(len(self.visited) - 1):
             total_mass += LZ[self.visited[i]].mass
-            distance = calculate_distance(LZ[self.visited[i]], LZ[self.visited[i+1]])
+            distance = AM[self.visited[i], self.visited[i+1]]
             total_distance += distance
             total_fatigue += calculate_fatigue(distance, total_mass)
-        return total_distance * c_dist + total_fatigue * c_fat
+        self.dest_fun = total_distance * C_dist + total_fatigue * C_fat
+        return None
 
     def leave_feromone_trail(self, FM: np.ndarray) -> None:
-        pass
+        for i in range(len(self.visited) - 1):
+            FM[self.visited[i], self.visited[i+1]] += Fero_amount / self.dest_fun
+    
 
                 
         
@@ -138,7 +148,10 @@ class Ant:
 def create_ant_list(LZ: list[Product]) -> list[Ant]:
     AL = []
     for product in LZ:
-        AL.append(Ant(product))
+        if product.ID == exit_ID:
+            pass
+        else:
+            AL.append(Ant(product))
     return AL
 
 def calculate_distance(p1: Product, p2: Product) -> float:
@@ -182,8 +195,13 @@ def calculate_adjacency_matrix(LZ: list[Product]) -> list[list[float]]:
     AM = np.zeros([N,N])
     
     for i in range(N):
-        for j in range(N):
-            AM[i, j] = calculate_distance(LZ[i], LZ[j])
+        for j in range(i, N):
+            if i != j:
+                dist = calculate_distance(LZ[i], LZ[j])
+                AM[i, j] = dist
+                AM[j, i] = dist
+            else:
+                AM[i, j] = 0
 
     return np.array(AM)
 
