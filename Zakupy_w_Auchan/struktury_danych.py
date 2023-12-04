@@ -18,8 +18,8 @@ C_dist = 1   # destination function distance constant
 C_fat = 1   # destination function fatigue constant
 A_dist = 1   # distance constant
 A_fer = 1   # feromone constant
-Evap = 0.5 # feromone evaporation constant
-Fero_amount = 100000 # feromone amount left on trail segment to be devided by destination function value
+Evap = 0.8 # feromone evaporation constant
+Fero_amount = 10000000 # feromone amount left on trail segment to be devided by destination function value
 L0 = 0 # 500  # distance to the shop
 F0 = 0 # 100  # fatigue of getting to the shop
 
@@ -103,7 +103,7 @@ class Ant:
         sum_cost = 0.0
         cost_list = []
         for id in range(AM.shape[0]):
-            if id in self.visited or id == entry_ID or (id == AM.shape[0] - 1 and -1 in self.visited):
+            if id in self.visited or id == entry_ID or (id == AM.shape[0] - 1 and -1 in self.visited) or (id == AM.shape[0] - 1 and self.visited[0] == 0 and len(self.visited) < AM.shape[0] -1):
                 cost_list.append(-1)
             else:
                 val = 1/(A_dist*AM[last_p_id, id] + A_fer*FM[last_p_id, id])
@@ -227,7 +227,7 @@ def calculate_adjacency_matrix(LZ: list[Product]) -> list[list[float]]:
 
 def create_feromone_matrix(LZ: list[Product]):
     N = len(LZ)
-    FM = np.ones([N,N])
+    FM = np.ones([N,N]) - np.eye(N)
     return FM
 
 #################################################

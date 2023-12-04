@@ -4,6 +4,8 @@ import struktury_danych as sd
 from gui_output import show_points
 from random import random
 
+np.set_printoptions(precision=0, floatmode="maxprec")
+
 def ant_algorithm(LZ: list[sd.Product], I: int) -> list[sd.Ant]:
     N = len(LZ)
     AM = sd.calculate_adjacency_matrix(LZ)
@@ -48,7 +50,7 @@ def main() -> None:
     # shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, exit_name)
 
     LZ = [sd.shop_entry]
-    for i in range(20):
+    for i in range(50):
         LZ.append(db.get_productinfo(i+1))
     LZ.append(sd.shop_exit)
     # for product in LZ:
