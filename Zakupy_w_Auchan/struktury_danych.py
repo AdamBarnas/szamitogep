@@ -52,24 +52,6 @@ exit_name = "EXIT"
 ###  CLASSES  ###
 #################################################
 
-class State:
-    def __init__(self, B: list, mass: int, coords: coords_t, L: float, F: float) -> None:
-        self.B = B #list of items in a basket
-        if mass == 0:
-            mass = M0
-            for item in self.B:
-                mass += item.mass
-        self.mass = mass #mass of basket and items inside
-        self.coords = coords #coordinates of a shopper
-        self.x = self.coords[0] #coordinate x
-        self.y = self.coords[1] #coordinate y
-        self.L = L #distance walked
-        self.F = F #fatigue
-    
-    def destination_function(self) -> float: #calculate how easy it was to do the shopping
-        ret_val = self.L * C_dist + self.F * C_fat
-        return ret_val
-
 class Product:
     def __init__(self, ID: int, mass: float, coords: coords_t, name: str) -> None:
         self.ID = ID #product ID
@@ -194,21 +176,6 @@ def calculate_distance(p1: Product, p2: Product) -> float:
 
 def calculate_fatigue(distance, mass) -> float:
     return distance * mass
-
-def transfer_function(S: State, D: Product):
-    B = S.B
-    if D.ID not in B:
-        B.append(D.ID)
-    else:
-        print("Item already in a basket")
-        return None
-    mass = S.mass + D.mass
-    coords = D.coords
-    distance = calculate_distance(S, D)
-    L = S.L + distance
-    F = S.F + calculate_fatigue(distance, S.mass)
-    newstate = State(B, mass, coords, L, F)
-    return newstate
 
 def calculate_adjacency_matrix(LZ: list[Product]) -> list[list[float]]:
     N = len(LZ)

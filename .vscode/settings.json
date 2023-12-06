@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "Zakupy_w_Auchan"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}

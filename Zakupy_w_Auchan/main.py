@@ -59,10 +59,10 @@ def main() -> None:
     # AM = sd.calculate_adjacency_matrix(LZ)
     # print(AM)
 
-    AL = ant_algorithm(LZ, 1000)
+    AL = ant_algorithm(LZ, 500)
 
 
-    # show_points(LZ)
+    show_points(LZ)
     return None
 
 main()
