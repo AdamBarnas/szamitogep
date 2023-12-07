@@ -2,6 +2,7 @@ import numpy as np
 from baza import Database
 import struktury_danych as sd
 from gui_output import show_points
+import matplotlib.pyplot as plt
 from random import random
 
 np.set_printoptions(precision=0, floatmode="maxprec")
@@ -10,6 +11,7 @@ def ant_algorithm(LZ: list[sd.Product], I: int) -> list[sd.Ant]:
     N = len(LZ)
     AM = sd.calculate_adjacency_matrix(LZ)
     FM = sd.create_feromone_matrix(LZ)
+    better_list = []
     best_sol = float("inf")
     best_ant = None
     i = 0
@@ -32,6 +34,7 @@ def ant_algorithm(LZ: list[sd.Product], I: int) -> list[sd.Ant]:
             if ant.dest_fun < best_sol:
                 best_sol = ant.dest_fun
                 best_ant = ant
+                better_list.append((i, best_sol))
             ant.leave_feromone_trail(FM)
         
         i += 1
@@ -39,8 +42,11 @@ def ant_algorithm(LZ: list[sd.Product], I: int) -> list[sd.Ant]:
 
     print("best\n", best_sol) 
     print("Ant: ", best_ant.ID, "   ", best_ant.visited) 
+    print(better_list)
     # print("AM:\n", AM)  
     # print("FM:\n", FM)
+    plt.imshow(FM)
+    plt.show()
     return AL
 
 def main() -> None:
@@ -59,10 +65,10 @@ def main() -> None:
     # AM = sd.calculate_adjacency_matrix(LZ)
     # print(AM)
 
-    AL = ant_algorithm(LZ, 500)
+    AL = ant_algorithm(LZ, 1000)
 
 
-    show_points(LZ)
+    # show_points(LZ)
     return None
 
 main()
