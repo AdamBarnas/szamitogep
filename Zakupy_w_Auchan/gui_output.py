@@ -1,10 +1,13 @@
 import matplotlib.pyplot as plt
 from struktury_danych import Product
 
-def show_points(LZ: list[Product]) -> None:
+def show_points(LZ: list[Product], best_sol) -> None:
     x_coords = []
     y_coords = []
-    for product in LZ:
+    NLZ = []
+    for i in best_sol:
+        NLZ.append(LZ[i])
+    for product in NLZ:
         x_coords.append(product.coords[0])
         y_coords.append(product.coords[1])
     plt.plot(x_coords, y_coords)

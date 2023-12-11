@@ -5,6 +5,9 @@ from gui_output import show_points
 from gui_input import input_constants
 import matplotlib.pyplot as plt
 from random import random
+import random as r
+
+# r.seed(19216812)
 
 np.set_printoptions(precision=0, floatmode="maxprec")
 
@@ -26,10 +29,10 @@ def main() -> None:
     # AM = sd.calculate_adjacency_matrix(LZ)
     # print(AM)
 
-    AL = sd.ant_algorithm(LZ)
+    best_sol = sd.ant_algorithm(LZ)
 
 
-    show_points(LZ)
+    show_points(LZ, best_sol)
     return None
 
 main()
