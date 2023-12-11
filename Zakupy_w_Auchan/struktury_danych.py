@@ -2,7 +2,7 @@ import typing
 import numpy as np
 import matplotlib.pyplot as plt
 from random import random
-
+from gui_input import input_constants
 #################################################
 ###  TYPES  ###
 #################################################
@@ -13,16 +13,19 @@ coords_t = tuple[float, float]
 ###  CONSTANTS  ###
 #################################################
 
-M0 = 0 # 0.5  # empty basket mass
-C_dist = 1   # destination function distance constant
-C_fat = 1   # destination function fatigue constant
-A_dist = 1   # distance constant
-A_fer = 1   # feromone constant
-Evap = 0.8 # feromone evaporation constant
-Fero_amount = 10000000 # feromone amount left on trail segment to be devided by destination function value
-L0 = 0 # 500  # distance to the shop
-F0 = 0 # 100  # fatigue of getting to the shop
-
+#M0 = 0 # 0.5  # empty basket mass
+CD = input_constants()
+print(CD)
+M0 = CD["m0"]
+C_dist = CD["c_l"]   # destination function distance constant
+C_fat = CD["c_f"]  # destination function fatigue constant
+A_dist = CD["Ad"]   # distance constant
+A_fer = CD["Afer"]   # feromone constant
+Evap = CD["Evap"] #0.8 # feromone evaporation constant
+Fero_amount = CD["Fero_amount"] #10000000 # feromone amount left on trail segment to be devided by destination function value
+L0 = CD["L0"] # 500  # distance to the shop
+F0 = CD["F0"] # 100  # fatigue of getting to the shop
+Iter = CD["Iter"] #1000 #number of iterations
 entry_ID = 0
 entry_coords1 = (7, 765)
 entry_coords2 = (7, 38)
@@ -55,7 +58,7 @@ exit_name = "EXIT"
 class Product:
     def __init__(self, ID: int, mass: float, coords: coords_t, name: str) -> None:
         self.ID = ID #product ID
-        self.mass = mass #product mass
+        self.mass = 1 #product mass
         self.coords = coords #product coordinates
         self.name = name #product name
 
@@ -203,3 +206,50 @@ def create_feromone_matrix(LZ: list[Product]):
 
 shop_entry = Product(entry_ID, M0, entry_coords1, entry_name)
 shop_exit = Product(exit_ID, M0, exit_coords1, exit_name)
+
+#################################################
+########### main function ######################
+#################################################
+
+def ant_algorithm(LZ: list[Product]) -> list[Ant]:
+    I = Iter
+    N = len(LZ)
+    AM = calculate_adjacency_matrix(LZ)
+    FM = create_feromone_matrix(LZ)
+    better_list = []
+    best_sol = float("inf")
+    best_ant = None
+    i = 0
+    while i < I:
+        AL = create_ant_list(LZ)
+        for iter in range(N-1): # number of passes to do single pass through whole shop
+
+            for ant in AL: # all ants move once
+                id = ant.choose_next_product(AM, FM, random())
+                if id != None:
+                    ant.goto_next_product(LZ[id])
+                else:
+                    break
+        
+        FM = FM * Evap
+        
+        for ant in AL:
+            ant.calculate_destination_function(LZ, AM)
+            # print(ant.ID, ": ", ant.dest_fun)
+            if ant.dest_fun < best_sol:
+                best_sol = ant.dest_fun
+                best_ant = ant
+                better_list.append((i, best_sol))
+            ant.leave_feromone_trail(FM)
+        
+        i += 1
+    
+
+    print("best\n", best_sol) 
+    print("Ant: ", best_ant.ID, "   ", best_ant.visited) 
+    print(better_list)
+    # print("AM:\n", AM)  
+    # print("FM:\n", FM)
+    plt.imshow(FM)
+    plt.show()
+    return AL

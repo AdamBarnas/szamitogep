@@ -7,6 +7,7 @@ def show_points(LZ: list[Product]) -> None:
     for product in LZ:
         x_coords.append(product.coords[0])
         y_coords.append(product.coords[1])
+    plt.plot(x_coords, y_coords)
     img = plt.imread("Zakupy_w_Auchan\wymiary.png")
     plt.scatter(x_coords, y_coords)
     plt.imshow(img)
