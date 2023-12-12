@@ -220,6 +220,13 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     best_sol = float("inf")
     best_ant = None
     i = 0
+
+    try:
+        file = open("file.txt", "a")
+
+    except IOError:
+            print("Error: The file could not be written.")
+
     while i < I:
         AL = create_ant_list(LZ)
         for iter in range(N-1): # number of passes to do single pass through whole shop
@@ -242,9 +249,27 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                 better_list.append((i, best_sol))
             ant.leave_feromone_trail(FM)
         
-        i += 1
-    
+        file.write("Iteration:" + str(i) + "\n")
+        for ant in AL:
+            file.write("ID:" + str(ant.ID))
+            file.write(";visited:" + str(ant.visited))
+            file.write(";coords:" + str(ant.coords)) 
+            file.write(";dest_fun:" + str(ant.dest_fun))
+            file.write("\n")
+        
+        file.write("best_ant:\n")      
+        file.write("ID:" + str(best_ant.ID))
+        file.write(";visited:" + str(best_ant.visited))
+        file.write(";coords:" + str(best_ant.coords)) 
+        file.write(";dest_fun:" + str(best_ant.dest_fun))
+        file.write("\n")
 
+        file.write("Feromone matrix:\n")
+        file.write(str(FM) + "\n")
+        i += 1
+        
+    file.close()
+    
     print("best\n", best_sol) 
     print("Ant: ", best_ant.ID, "   ", best_ant.visited) 
     print(better_list)
@@ -253,3 +278,4 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     plt.imshow(FM)
     plt.show()
     return AL
+
