@@ -91,7 +91,7 @@ class Ant:
             if id in self.visited or id == entry_ID or (id == AM.shape[0] - 1 and -1 in self.visited) or (id == AM.shape[0] - 1 and self.visited[0] == 0 and len(self.visited) < AM.shape[0] -1):
                 cost_list.append(-1)
             else:
-                val = 1/(A_dist*AM[last_p_id, id] + A_fer*FM[last_p_id, id])
+                val = (1 + A_fer*FM[last_p_id, id])/(A_dist*AM[last_p_id, id])
                 cost_list.append(val + sum_cost)
                 sum_cost += val
         rand_val = rand * sum_cost
@@ -172,9 +172,10 @@ def calculate_distance(p1: Product, p2: Product) -> float:
     else:
         coords1 = p1.coords
         coords2 = p2.coords
-    distance = 0
+    distance = 0.0
     for i in range(2):
-        distance += abs(coords1[i] - coords2[i])
+        distance += (coords1[i] - coords2[i])*(coords1[i] - coords2[i])
+    distance = np.sqrt(distance)
     return distance
 
 def calculate_fatigue(distance, mass) -> float:
@@ -205,7 +206,7 @@ def create_feromone_matrix(LZ: list[Product]):
 #################################################
 
 shop_entry = Product(entry_ID, M0, entry_coords1, entry_name)
-shop_exit = Product(exit_ID, M0, exit_coords1, exit_name)
+shop_exit = Product(exit_ID, 0, exit_coords1, exit_name)
 
 #################################################
 ########### main function ######################
@@ -275,7 +276,13 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     print(better_list)
     # print("AM:\n", AM)  
     # print("FM:\n", FM)
+<<<<<<< HEAD
     plt.imshow(FM)
     plt.show()
     return AL
 
+=======
+    # plt.imshow(FM)
+    # plt.show()
+    return best_ant.visited
+>>>>>>> 822e175151302eb734130008649a97d9dcb1b233
