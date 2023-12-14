@@ -16,8 +16,8 @@ np.set_printoptions(precision=0, floatmode="maxprec")
 def main() -> None:
     db = Database()
 
-    # shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, entry_name)
-    # shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, exit_name)
+    shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, "Makaron pełnoziarnisty świdry")
+    shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, "Majonez Winiary")
 
     LZ = [sd.shop_entry]
     for i in range(15):
@@ -31,6 +31,10 @@ def main() -> None:
 
     best_sol = sd.ant_algorithm(LZ)
 
+    # a = sd.parse('file.txt')
+
+    # for b in a:
+    #     print(b)
 
     show_points(LZ, best_sol)
     return None
