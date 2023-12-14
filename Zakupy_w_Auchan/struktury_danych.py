@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import random
 from gui_input import input_constants
+import pickle 
 #################################################
 ###  TYPES  ###
 #################################################
@@ -249,7 +250,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                 best_ant = ant
                 better_list.append((i, best_sol))
             ant.leave_feromone_trail(FM)
-        
+
         file.write("Iteration:" + str(i) + "\n")
         for ant in AL:
             file.write("ID:" + str(ant.ID))
@@ -266,7 +267,16 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
         file.write("\n")
 
         file.write("Feromone matrix:\n")
-        file.write(str(FM) + "\n")
+
+
+
+        integer_FM = numpy_to_matrix(FM)
+        file.write('[' + str(integer_FM[0]) + '\n')
+        for intf in integer_FM:
+            file.write(' ' + str(intf) + '\n')    
+        file.write(' ' + str(integer_FM[-1]) + ']\n')
+
+
         i += 1
         
     file.close()
@@ -276,13 +286,71 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     print(better_list)
     # print("AM:\n", AM)  
     # print("FM:\n", FM)
-<<<<<<< HEAD
-    plt.imshow(FM)
-    plt.show()
-    return AL
-
-=======
     # plt.imshow(FM)
     # plt.show()
     return best_ant.visited
->>>>>>> 822e175151302eb734130008649a97d9dcb1b233
+
+
+def parse(file_name):
+    with open(file_name, 'r') as file:
+        lines = file.readlines()
+    iteration = []
+    feromones_matrixes = []
+    for line in lines:
+        if 'Iteration' in line:
+            if 'Iteration:0' not in line:
+                iteration.append(ants_attributes)
+            matrix_as_str = ''
+            feromone_matrix = []
+            ants_attributes = []
+            data = {}
+            gather_matrix = False
+        if 'ID' in line:
+            params = line.split(';')
+            for param in params[0:]:
+                key = param.split(':')[0]
+                val = param.split(':')[1]
+                data[key] = val
+            data['visited'] = list(data['visited'].strip('][').split(', '))
+            data['coords'] = eval(data['coords'])
+            data['dest_fun'] = data['dest_fun'].strip('\n')
+            ants_attributes.append(data)
+            data = {}
+
+        if '[[' in line:
+            gather_matrix = True
+
+        if '[' in line and gather_matrix:
+            if '[[' in line:
+                matrix_as_str = line[1:]
+            elif ']]' in line:
+                matrix_as_str = line[1:-2]
+            else:
+                matrix_as_str = line[1:]
+            feromone_matrix.append(eval(matrix_as_str))
+
+        if ']]' in line:
+            gather_matrix = False
+            feromones_matrixes.append(feromone_matrix)
+
+    for i in range(0, len(iteration)):
+        best_ant = iteration[i][-1]
+        iteration[i] = iteration[i][:-1]
+        iteration[i] = {'ants': iteration[i],
+                        'best_ant': best_ant,
+                        'feromones_matrix': feromones_matrixes[i]}
+
+    return iteration
+
+
+def numpy_to_matrix(matrix):
+    tmp = []
+    c = []
+
+    for mat in matrix:
+        tmp = []
+        for m in mat:
+            tmp.append(float(m))
+        c.append(tmp)
+        
+    return c

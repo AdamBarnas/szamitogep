@@ -1,10 +1,12 @@
 import sqlite3
 from sqlite3 import Error
 import struktury_danych as sd
+import os
 
 class Database:
     def __init__(self):
-        self.database = "Zakupy_w_Auchan\database\data.db"
+        base_path = os.path.abspath(os.path.dirname(__file__))
+        self.database = os.path.join(base_path, "database", "data.db")
         self.conn = self.create_connection(self.database)
 
 
