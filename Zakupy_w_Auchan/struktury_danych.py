@@ -66,7 +66,7 @@ class Product:
         napis = self.name + "\nID:" + str(self.ID) + "\nmass: " + str(self.mass) + "kg\n" + "coords: " + str(self.coords)
         return napis
     
-class Ant:
+class Ant:  
     def __init__(self, item: Product) -> None:
         self.ID = item.ID
         self.visited = [item.ID] #items collected
@@ -219,6 +219,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     FM = create_feromone_matrix(LZ)
     better_list = []
     best_sol = float("inf")
+    best_ant_arr = []
     best_ant = None
     i = 0
     while i < I:
@@ -234,6 +235,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
         
         FM = FM * Evap
         
+        best_ant = AL[0]
         for ant in AL:
             ant.calculate_destination_function(LZ, AM)
             # print(ant.ID, ": ", ant.dest_fun)
@@ -242,7 +244,8 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                 best_ant = ant
                 better_list.append((i, best_sol))
             ant.leave_feromone_trail(FM)
-        
+        best_ant_arr.append(best_ant)
+
         i += 1
     
 
@@ -253,4 +256,4 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     # print("FM:\n", FM)
     # plt.imshow(FM)
     # plt.show()
-    return best_ant.visited
+    return best_ant_arr, best_ant.visited
