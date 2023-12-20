@@ -36,6 +36,9 @@ exit_coords1 = (7, 55)
 exit_coords2 = (7, 610)
 exit_name = "EXIT"
 
+cartesian = "c"
+pitagorean = "p"
+
 # #shopping list
 # LZ = []
 
@@ -159,7 +162,7 @@ def create_ant_list(LZ: list[Product]) -> list[Ant]:
             AL.append(Ant(product))
     return AL
 
-def calculate_distance(p1: Product, p2: Product) -> float:
+def calculate_distance(p1: Product, p2: Product, method: str =cartesian) -> float:
     if p2.name == exit_name and p1.coords[1] < 55:
         coords1 = p1.coords
         coords2 = exit_coords1
@@ -173,9 +176,13 @@ def calculate_distance(p1: Product, p2: Product) -> float:
         coords1 = p1.coords
         coords2 = p2.coords
     distance = 0.0
-    for i in range(2):
-        distance += (coords1[i] - coords2[i])*(coords1[i] - coords2[i])
-    distance = np.sqrt(distance)
+    if method == cartesian:
+        for i in range(2):
+            distance += abs(coords1[i] - coords2[i])
+    else:
+        for i in range(2):
+            distance += (coords1[i] - coords2[i])*(coords1[i] - coords2[i])
+        distance = np.sqrt(distance)
     return distance
 
 def calculate_fatigue(distance, mass) -> float:
@@ -222,6 +229,13 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     best_ant_arr = []
     best_ant = None
     i = 0
+
+    try:
+        file = open("file.txt", "a")
+
+    except IOError:
+            print("Error: The file could not be written.")
+
     while i < I:
         AL = create_ant_list(LZ)
         for iter in range(N-1): # number of passes to do single pass through whole shop
@@ -244,16 +258,34 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                 best_ant = ant
                 better_list.append((i, best_sol))
             ant.leave_feromone_trail(FM)
-        best_ant_arr.append(best_ant)
+        
+        file.write("Iteration:" + str(i) + "\n")
+        for ant in AL:
+            file.write("ID:" + str(ant.ID))
+            file.write(";visited:" + str(ant.visited))
+            file.write(";coords:" + str(ant.coords)) 
+            file.write(";dest_fun:" + str(ant.dest_fun))
+            file.write("\n")
+        
+        file.write("best_ant:\n")      
+        file.write("ID:" + str(best_ant.ID))
+        file.write(";visited:" + str(best_ant.visited))
+        file.write(";coords:" + str(best_ant.coords)) 
+        file.write(";dest_fun:" + str(best_ant.dest_fun))
+        file.write("\n")
 
+        file.write("Feromone matrix:\n")
+        file.write(str(FM) + "\n")
         i += 1
+        
+    file.close()
     
-
     print("best\n", best_sol) 
     print("Ant: ", best_ant.ID, "   ", best_ant.visited) 
     print(better_list)
     # print("AM:\n", AM)  
     # print("FM:\n", FM)
+
     # plt.imshow(FM)
     # plt.show()
-    return best_ant_arr, best_ant.visited
+    return best_ant.visited

@@ -9,7 +9,7 @@ import random as r
 
 # r.seed(19216812)
 
-np.set_printoptions(precision=0, floatmode="maxprec")
+# np.set_printoptions(precision=0, floatmode="maxprec")
 
 
 
