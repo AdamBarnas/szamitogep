@@ -29,12 +29,11 @@ def main() -> None:
     # AM = sd.calculate_adjacency_matrix(LZ)
     # print(AM)
 
-    best_ant_arr, best_sol = sd.ant_algorithm(LZ)
+    best_sol = sd.ant_algorithm(LZ)
 
 
     show_points(LZ, best_sol)
     #show_best_ants(LZ, best_ant_arr)
-    ani_plot(LZ, best_ant_arr)
 
     return None
 
