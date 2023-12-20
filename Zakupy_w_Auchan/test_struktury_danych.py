@@ -74,6 +74,11 @@ class TestAnt:
         assert ant.visited == [0, 3, 1, 2, -1]
 
     def test_calculate_destination_function_1(self):
+        sd.M0 = 1
+        sd.C_dist = 1
+        sd.C_fat = 1
+        sd.F0 = 0
+        sd.L0 = 0
         shop_entry = sd.Product(sd.entry_ID, 1, (0, 0), sd.entry_name)
         product_1 = sd.Product(1, 1, (1, 1), "1")
         product_2 = sd.Product(2, 0, (2, 2), "2")
@@ -86,6 +91,11 @@ class TestAnt:
         assert ant.dest_fun == 10
 
     def test_calculate_destination_function_2(self):
+        sd.M0 = 1
+        sd.C_dist = 1
+        sd.C_fat = 1
+        sd.F0 = 0
+        sd.L0 = 0
         shop_entry = sd.Product(sd.entry_ID, 1, sd.entry_coords1, sd.entry_name)
         product_1 = sd.Product(1, 2, (10, 10), "1")
         product_2 = sd.Product(2, 2, (20, 20), "2")
@@ -98,7 +108,7 @@ class TestAnt:
         ant.goto_next_product(shop_exit)
         ant.goto_next_product(product_3)
         ant.calculate_destination_function(LZ, AM)
-        assert ant.dest_fun == 2288
+        assert ant.dest_fun == 1956
     
 def test_create_feromone_matrix():
     db = Database()

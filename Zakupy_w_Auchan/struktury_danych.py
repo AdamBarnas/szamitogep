@@ -37,6 +37,9 @@ exit_coords1 = (7, 55)
 exit_coords2 = (7, 610)
 exit_name = "EXIT"
 
+cartesian = "c"
+pitagorean = "p"
+
 # #shopping list
 # LZ = []
 
@@ -160,7 +163,7 @@ def create_ant_list(LZ: list[Product]) -> list[Ant]:
             AL.append(Ant(product))
     return AL
 
-def calculate_distance(p1: Product, p2: Product) -> float:
+def calculate_distance(p1: Product, p2: Product, method: str =cartesian) -> float:
     if p2.name == exit_name and p1.coords[1] < 55:
         coords1 = p1.coords
         coords2 = exit_coords1
@@ -174,9 +177,13 @@ def calculate_distance(p1: Product, p2: Product) -> float:
         coords1 = p1.coords
         coords2 = p2.coords
     distance = 0.0
-    for i in range(2):
-        distance += (coords1[i] - coords2[i])*(coords1[i] - coords2[i])
-    distance = np.sqrt(distance)
+    if method == cartesian:
+        for i in range(2):
+            distance += abs(coords1[i] - coords2[i])
+    else:
+        for i in range(2):
+            distance += (coords1[i] - coords2[i])*(coords1[i] - coords2[i])
+        distance = np.sqrt(distance)
     return distance
 
 def calculate_fatigue(distance, mass) -> float:
