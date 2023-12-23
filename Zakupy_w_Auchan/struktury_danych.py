@@ -162,7 +162,7 @@ def create_ant_list(LZ: list[Product]) -> list[Ant]:
             AL.append(Ant(product))
     return AL
 
-def calculate_distance(p1: Product, p2: Product, method: str =cartesian) -> float:
+def calculate_distance(p1: Product, p2: Product, method: str =pitagorean) -> float:
     if p2.name == exit_name and p1.coords[1] < 55:
         coords1 = p1.coords
         coords2 = exit_coords1
@@ -226,6 +226,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     FM = create_feromone_matrix(LZ)
     better_list = []
     best_sol = float("inf")
+    best_iter = 0
     best_ant_arr = []
     best_ant = None
     i = 0
@@ -249,13 +250,14 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
         
         FM = FM * Evap
         
-        best_ant = AL[0]
+        # best_ant = AL[0]
         for ant in AL:
             ant.calculate_destination_function(LZ, AM)
             # print(ant.ID, ": ", ant.dest_fun)
             if ant.dest_fun < best_sol:
                 best_sol = ant.dest_fun
                 best_ant = ant
+                best_iter = i
                 better_list.append((i, best_sol))
             ant.leave_feromone_trail(FM)
         
@@ -281,11 +283,11 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     file.close()
     
     print("best\n", best_sol) 
-    print("Ant: ", best_ant.ID, "   ", best_ant.visited) 
+    print("Ant: ", best_iter, "   ", best_ant.visited) 
     print(better_list)
     # print("AM:\n", AM)  
     # print("FM:\n", FM)
 
-    # plt.imshow(FM)
-    # plt.show()
+    plt.imshow(FM)
+    plt.show()
     return best_ant.visited

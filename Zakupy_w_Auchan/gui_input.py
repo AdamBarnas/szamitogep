@@ -2,7 +2,7 @@ import PySimpleGUI as sg
 
 sg.theme('DarkAmber')   # Add a touch of color
 
-def input_constants( GUION = 0,mo_default = 0.5, c_l_default = 1, c_f_default = 0, L0_default = 500, F0_default = 100, Ad_default = 1, Afer_default = 1, Evap_default = 0.5, Fero_amount_default = 1000, Iter_default = 1000):
+def input_constants( GUION = 0,mo_default = 0.5, c_l_default = 1, c_f_default = 0, L0_default = 500, F0_default = 100, Ad_default = 1, Afer_default = 4, Evap_default = 0.5, Fero_amount_default = 1000, Iter_default = 1000):
     #inputs: constants for algorithm, returns dict with given constants or default values
     const_dict = {"m0": mo_default, "c_l": c_l_default, "c_f": c_f_default, "L0": L0_default , "F0": F0_default, "Ad" : Ad_default, "Af" : Afer_default, "Evap" : Evap_default, "Afer" : Afer_default, "Fero_amount": Fero_amount_default, "Iter": Iter_default}
     layout = [  [sg.Text('Enter constants: ')],
