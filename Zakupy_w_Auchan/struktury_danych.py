@@ -335,18 +335,4 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                                     f"Epsilon: {A_fer}, Threshold: {threshold}"
     return best_ant.visited, best_ant_arr, FM, i, text_summary+parameters_summary
 
-# CD = input_constants()
-# print(CD)
-# M0 = CD["mo"]
-# C_dist = CD["c_l"]   # destination function distance constant
-# C_fat = CD["c_f"]  # destination function fatigue constant
-# A_dist = CD["Ad"]   # distance constant
-# A_fer = CD["Afer"]   # feromone constant
-# Evap = CD["Evap"] #0.8 # feromone evaporation constant
-# Fero_amount = CD["Fero_amount"] #10000000 # feromone amount left on trail segment to be devided by destination function value
-# L0 = CD["L0"] # 500  # distance to the shop
-# F0 = CD["F0"] # 100  # fatigue of getting to the shop
-# Iter = CD["Iter"] #1000 #number of iterations
-# eps = CD["eps"]
-# threshold = CD["threshold"]
 
