@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import random
 from gui_input import input_constants
+import time
 #################################################
 ###  TYPES  ###
 #################################################
@@ -16,7 +17,7 @@ coords_t = tuple[float, float]
 #M0 = 0 # 0.5  # empty basket mass
 CD = input_constants()
 print(CD)
-M0 = CD["m0"]
+M0 = CD["mo"]
 C_dist = CD["c_l"]   # destination function distance constant
 C_fat = CD["c_f"]  # destination function fatigue constant
 A_dist = CD["Ad"]   # distance constant
@@ -26,6 +27,10 @@ Fero_amount = CD["Fero_amount"] #10000000 # feromone amount left on trail segmen
 L0 = CD["L0"] # 500  # distance to the shop
 F0 = CD["F0"] # 100  # fatigue of getting to the shop
 Iter = CD["Iter"] #1000 #number of iterations
+eps = CD["eps"]
+threshold = CD["threshold"]
+
+
 entry_ID = 0
 entry_coords1 = (7, 765)
 entry_coords2 = (7, 38)
@@ -216,9 +221,11 @@ shop_entry = Product(entry_ID, M0, entry_coords1, entry_name)
 shop_exit = Product(exit_ID, 0, exit_coords1, exit_name)
 
 #################################################
-########### main function ######################
+### MAIN FUNCTION ###
 #################################################
 
+#stop = 1: stop when improvement beteen iterations is less then eps
+#stop = 2: stop if destination funct. is less then treshold: df_tresh 
 def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     I = Iter
     N = len(LZ)
@@ -231,13 +238,18 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     best_ant = None
     i = 0
 
+    flag_continue = True
+    #stop condition selection, if nothing is choosen it will stop after max iter I
+    df_tresh = threshold
+
     try:
         file = open("file.txt", "a")
 
     except IOError:
             print("Error: The file could not be written.")
 
-    while i < I:
+    start_ACO = time.time()
+    while(flag_continue):
         AL = create_ant_list(LZ)
         for iter in range(N-1): # number of passes to do single pass through whole shop
 
@@ -269,6 +281,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
             file.write(";dest_fun:" + str(ant.dest_fun))
             file.write("\n")
         
+        best_ant_arr.append(best_ant)
         file.write("best_ant:\n")      
         file.write("ID:" + str(best_ant.ID))
         file.write(";visited:" + str(best_ant.visited))
@@ -278,16 +291,62 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
 
         file.write("Feromone matrix:\n")
         file.write(str(FM) + "\n")
+
         i += 1
-        
+        #check for stop
+        if (i > I):
+            flag_continue = False
+            stop_crierion = "Max. iterations"
+        elif ((i > 2) & bool(CD["Stop_eps"])) :
+            for i_bl in range(1,len(better_list)):
+                if (better_list[-1][0] != better_list[-i_bl-1][0]):
+                    if (abs(better_list[-1][1]-better_list[-i_bl-1][1]) < eps):
+                        flag_continue = False
+                        stop_crierion = f"Improvment of dest. function by less than {eps}"
+                        break
+        elif( (better_list[-1][1] < df_tresh) & bool(CD["Stop_threshold"])):
+            flag_continue = False
+            stop_crierion = f"Dest. function below treshold: {df_tresh}"
+
+    end_ACO = time.time()
+    i = i-1
     file.close()
     
     print("best\n", best_sol) 
-    print("Ant: ", best_iter, "   ", best_ant.visited) 
+    print("Ant: ", best_iter, "   ", best_ant.visited, "iteration: ", i) 
     print(better_list)
     # print("AM:\n", AM)  
     # print("FM:\n", FM)
 
-    plt.imshow(FM)
-    plt.show()
-    return best_ant.visited
+    #plt.imshow(FM)
+    #plt.show()
+    #summary text for plot:
+    text_summary = f"SUMMARY:\nBest road: {best_ant.visited}\nNumber of iterations: {i}\nDest. functio: {best_ant.dest_fun}\nStop criterion:{stop_crierion}\nTime: {end_ACO - start_ACO}\n\n"
+    parameters_summary = f"PARAMETERS:\nBasket mass: {M0}\nDestination function distance constant: {C_dist}\n"+ \
+                                    f"Fatigue constant: {C_fat}\n" + \
+                                    f"Distance cosntant: {A_dist}\n" + \
+                                    f"Feromone constant: {A_fer}\n" + \
+                                    f"Feromone evaporation constant: {Evap}\n" + \
+                                    f"Amount of feromones: {Fero_amount}\n" + \
+                                    f"Feromone evaporation constant: {A_fer}\n" + \
+                                    f"Disatnce to shop: {L0}\n" + \
+                                    f"Fatigue of getting to shop: {F0}\n" + \
+                                    f"Max. number of iterations: {Iter}\n" + \
+                                    f"Epsilon: {A_fer}, Threshold: {threshold}"
+    return best_ant.visited, best_ant_arr, FM, i, text_summary+parameters_summary
+
+# CD = input_constants()
+# print(CD)
+# M0 = CD["mo"]
+# C_dist = CD["c_l"]   # destination function distance constant
+# C_fat = CD["c_f"]  # destination function fatigue constant
+# A_dist = CD["Ad"]   # distance constant
+# A_fer = CD["Afer"]   # feromone constant
+# Evap = CD["Evap"] #0.8 # feromone evaporation constant
+# Fero_amount = CD["Fero_amount"] #10000000 # feromone amount left on trail segment to be devided by destination function value
+# L0 = CD["L0"] # 500  # distance to the shop
+# F0 = CD["F0"] # 100  # fatigue of getting to the shop
+# Iter = CD["Iter"] #1000 #number of iterations
+# eps = CD["eps"]
+# threshold = CD["threshold"]
+

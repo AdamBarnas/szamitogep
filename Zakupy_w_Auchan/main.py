@@ -1,7 +1,7 @@
 import numpy as np
 from baza import Database
 import struktury_danych as sd
-from gui_output import show_points, show_graphs, show_best_ants, ani_plot
+from gui_output import show_points, show_best_ants, plot_dest_func, plot_FM, plot_DestFunc_FM_Map_Summary, animate_best_ants
 from gui_input import input_constants
 import matplotlib.pyplot as plt
 from random import random
@@ -10,7 +10,6 @@ import random as r
 # r.seed(19216812)
 
 # np.set_printoptions(precision=0, floatmode="maxprec")
-
 
 
 def main() -> None:
@@ -29,10 +28,9 @@ def main() -> None:
     # AM = sd.calculate_adjacency_matrix(LZ)
     # print(AM)
 
-    best_sol = sd.ant_algorithm(LZ)
-
-
-    show_points(LZ, best_sol)
+    best_sol, best_ant_arr, FM, iter, text = sd.ant_algorithm(LZ)
+    #TO OSTATECZNA FUNKCJA: 
+    plot_DestFunc_FM_Map_Summary(best_ant_arr, FM, LZ, best_sol, text, animation=1)
     #show_best_ants(LZ, best_ant_arr)
 
     return None
