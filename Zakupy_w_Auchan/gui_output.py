@@ -12,7 +12,7 @@ def show_points(LZ: list[Product], best_sol, ax) -> ([list[int], list[int]]):
     for product in NLZ:
         x_coords.append(product.coords[0])
         y_coords.append(product.coords[1])
-    ax.plot(x_coords, y_coords)
+    ax.plot(x_coords, y_coords, linewidth=5, alpha=0.7)
     img = plt.imread("Zakupy_w_Auchan\wymiary.png")
     ax.scatter(x_coords, y_coords)
     ax.imshow(img)
@@ -32,7 +32,7 @@ def plot_DestFunc_FM_Map_Summary(best_ant_arr, FM, LZ, best_sol, text, animation
     plot_summary_text(text, axd['lower left1'])
     show_points(LZ, best_sol, axd["right"])
     if (animation == 1):
-        animate_best_ants(LZ, best_ant_arr, axd["right"])
+        animate_best_ants(LZ, best_ant_arr, axd["right"], 50)
     fig.suptitle('Summary')
     plt.show()
     return None
