@@ -241,7 +241,8 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     flag_continue = True
     #stop condition selection, if nothing is choosen it will stop after max iter I
     df_tresh = threshold
-
+    no_better_count = 0
+    
     try:
         file = open("file.txt", "a")
 
@@ -301,9 +302,11 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
             for i_bl in range(1,len(better_list)):
                 if (better_list[-1][0] != better_list[-i_bl-1][0]):
                     if (abs(better_list[-1][1]-better_list[-i_bl-1][1]) < eps):
-                        flag_continue = False
-                        stop_crierion = f"Improvment of dest. function by less than {eps}"
-                        break
+                        no_better_count += 1
+                        if no_better_count > 5:
+                            flag_continue = False
+                            stop_crierion = f"Improvment of dest. function by less than {eps} for 5 iterations."
+                            break
         elif( (better_list[-1][1] < df_tresh) & bool(CD["Stop_threshold"])):
             flag_continue = False
             stop_crierion = f"Dest. function below treshold: {df_tresh}"

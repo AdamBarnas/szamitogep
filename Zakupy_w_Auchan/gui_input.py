@@ -2,6 +2,10 @@ import PySimpleGUI as sg
 
 sg.theme('LightBlue2')   # Add a touch of color
 
+######constants######
+timeout_c = 1000
+#####################
+
 def parse_inputs(file):
     default_dict = {}
     f = open(file, "r")
@@ -17,7 +21,8 @@ def input_constants( GUION = 1 , default_file = "Zakupy_w_Auchan/defautl_values.
     #inputs: constants for algorithm, returns dict with given constants or default values
     const_dict = parse_inputs(default_file)
     print(const_dict)
-    layout = [  [sg.Text('Enter constants: ')],
+    layout = [  
+                [sg.Text('Enter constants: '), sg.Image("Zakupy_w_Auchan/annnt.gif", key="gif_ant")],
                 [sg.Text(f'Mass of empty basket [kg] :'), sg.Input(default_text=const_dict["mo"], key="mo")],
                 [sg.Text(f'Destination function distance constant:'), sg.Input(default_text=const_dict["c_l"], key="c_l")],
                 [sg.Text(f'Destination function fatigue constant:'), sg.Input(default_text=const_dict["c_f"], key="c_f")],
@@ -37,7 +42,8 @@ def input_constants( GUION = 1 , default_file = "Zakupy_w_Auchan/defautl_values.
         window = sg.Window("Zakupy w Auchan", layout)
         
         while True:
-            event, values = window.read()
+            event, values = window.read(timeout=timeout_c)
+            window["gif_ant"].UpdateAnimation("Zakupy_w_Auchan/annnt.gif",time_between_frames=timeout_c)
             if event == sg.WIN_CLOSED:
                 break
             elif event == "Submit":

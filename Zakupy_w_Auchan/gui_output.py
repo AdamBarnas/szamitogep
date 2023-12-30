@@ -2,7 +2,11 @@ import matplotlib.pyplot as plt
 from struktury_danych import Product
 from random import randint
 from matplotlib.animation import FuncAnimation
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import PySimpleGUI as sg
+import matplotlib
 
+matplotlib.use('TkAgg')
 def show_points(LZ: list[Product], best_sol, ax) -> ([list[int], list[int]]):
     x_coords = []
     y_coords = []
@@ -34,8 +38,8 @@ def plot_DestFunc_FM_Map_Summary(best_ant_arr, FM, LZ, best_sol, text, animation
     if (animation == 1):
         animate_best_ants(LZ, best_ant_arr, axd["right"], 50)
     fig.suptitle('Summary')
-    plt.show()
-    return None
+    #plt.show()
+    return fig
 
 # def animate(i):
 #     pt = randint(1,9) # grab a random integer to be the next y-value in the animation
@@ -112,7 +116,7 @@ def get_ant_route(ant, LZ):
 
 #delat: if delta == 10 every 10. iteration will be animated on plot
 def animate_best_ants(LZ, best_ant_arr, ax, delta = 1):
-    alpha = 0.1
+    alpha = 1/len(LZ)
     for idx, ant in enumerate(best_ant_arr):
         if (idx % delta == 0):
             x_coords, y_coords = get_ant_route(ant, LZ)
@@ -120,3 +124,15 @@ def animate_best_ants(LZ, best_ant_arr, ax, delta = 1):
             plt.pause(0.25)
     plt.show()
     return None
+
+##### integration woith pysimplegui #####
+def draw_figure(canvas, figure):
+   figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
+   figure_canvas_agg.draw()
+   figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+   return figure_canvas_agg
+
+
+layout_output = [[sg.Text('Plot test')],
+   [sg.Canvas(key='-CANVAS-')],
+   [sg.Button('Ok')]]
