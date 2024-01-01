@@ -30,9 +30,9 @@ def main() -> None:
     # AM = sd.calculate_adjacency_matrix(LZ)
     # print(AM)
 
-    best_sol, best_ant_arr, FM, iter, text = sd.ant_algorithm(LZ)
+    best_sol, best_ant_arr, best_ant_in_iter_arr, FM, iter, text = sd.ant_algorithm(LZ)
     #TO OSTATECZNA FUNKCJA: 
-    fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, FM, LZ, best_sol, text, animation=1)
+    fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=1)
     #show_best_ants(LZ, best_ant_arr)
 
     #### show output ####

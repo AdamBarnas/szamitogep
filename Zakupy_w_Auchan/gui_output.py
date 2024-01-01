@@ -27,11 +27,13 @@ def annotate_axes(ax, text, fontsize=18):
     ax.text(0.5, 0.5, text, transform=ax.transAxes,
             ha="center", va="center", fontsize=fontsize, color="darkgrey")
     
-def plot_DestFunc_FM_Map_Summary(best_ant_arr, FM, LZ, best_sol, text, animation = 0):
+def plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation = 0):
     fig, axd = plt.subplot_mosaic([['upper left', 'upper left', 'right'],
+                                   ['upper left2', 'upper left2', 'right'],
                                ['lower left1', 'lower left2', 'right']],
                               figsize=(12, 6), layout="constrained")
     plot_dest_func(best_ant_arr, axd["upper left"])
+    plot_dest_func_iter(best_ant_in_iter_arr, axd["upper left2"] )
     plot_FM(FM, axd["lower left2"])
     plot_summary_text(text, axd['lower left1'])
     show_points(LZ, best_sol, axd["right"])
@@ -59,14 +61,26 @@ def plot_dest_func(best_ant_arr, ax):
         dest_func_arr.append(ant.dest_fun)
         idx_arr.append(idx)
     ax.plot(idx_arr, dest_func_arr)
-    ax.set_title("Desination function in each iterartion")
+    ax.set_title("Desination function (Best so far)")
+    ax.grid()
+    return None
+
+
+def plot_dest_func_iter(best_ant_in_iter_arr, ax):
+    dest_func_arr = []
+    idx_arr = []
+    for idx, ant in enumerate(best_ant_in_iter_arr):
+        dest_func_arr.append(ant.dest_fun)
+        idx_arr.append(idx)
+    ax.plot(idx_arr, dest_func_arr)
+    ax.set_title("Desination function (Best in iteration)")
     ax.grid()
     return None
 
 
 def plot_FM(FM,ax):
     ax.imshow(FM)
-    ax.set_title("Feromone Matrix")
+    ax.set_title("Feromone Matrix (last iteration)")
     return None
 
 
@@ -124,6 +138,8 @@ def animate_best_ants(LZ, best_ant_arr, ax, delta = 1):
             plt.pause(0.25)
     plt.show()
     return None
+
+
 
 ##### integration woith pysimplegui #####
 def draw_figure(canvas, figure):
