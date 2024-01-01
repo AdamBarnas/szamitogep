@@ -31,12 +31,13 @@ def main() -> None:
 
     best_sol = sd.ant_algorithm(LZ)
 
-    # a = sd.parse('file.txt')
-
+    a = sd.parse('file.txt')
+    print(a[0]['best_ant']['dest_fun'])
+    # print(a[0]['ants'][9]['visited'])
     # for b in a:
     #     print(b)
 
-    show_points(LZ, best_sol)
+    # show_points(LZ, best_sol)
     return None
 
 main()
