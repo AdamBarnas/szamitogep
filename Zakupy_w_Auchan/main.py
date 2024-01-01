@@ -9,7 +9,7 @@ import random as r
 
 # r.seed(19216812)
 
-np.set_printoptions(precision=0, floatmode="maxprec")
+# np.set_printoptions(precision=0, floatmode="maxprec")
 
 
 
@@ -31,9 +31,14 @@ def main() -> None:
 
     best_sol = sd.ant_algorithm(LZ)
 
+
     a = sd.parse('file.txt')
     print(a[0]['best_ant']['dest_fun'])
     # print(a[0]['ants'][9]['visited'])
+
+    # a = sd.parse('file.txt')
+
+
     # for b in a:
     #     print(b)
 
