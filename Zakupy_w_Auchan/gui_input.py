@@ -1,43 +1,66 @@
 import PySimpleGUI as sg
 
-sg.theme('DarkAmber')   # Add a touch of color
+sg.theme('LightBlue2')   # Add a touch of color
 
-def input_constants(mo_default = 0.5, c_l_default = 1, c_f_default = 0, L0_default = 500, F0_default = 100, Ad_default = 1, Afer_default = 1, Evap_default = 0.5, Fero_amount_default = 1000, Iter_default = 1000):
+######constants######
+timeout_c = 1000
+#####################
+
+def parse_inputs(file):
+    default_dict = {}
+    f = open(file, "r")
+    for line in f:
+        line = line.rstrip()
+        line_sp = line.split("=")
+        default_dict[line_sp[0]] = float(line_sp[1])
+    return default_dict #zwróci słownik wartości z pliku
+
+
+#def input_constants( GUION = 1 ,mo_default = 0.5, c_l_default = 1, c_f_default = 0, L0_default = 500, F0_default = 100, Ad_default = 1, Afer_default = 4, Evap_default = 0.5, Fero_amount_default = 1000, Iter_default = 10):
+def input_constants( GUION = 1 , default_file = "Zakupy_w_Auchan/defautl_values.txt"):
     #inputs: constants for algorithm, returns dict with given constants or default values
-    
-    layout = [  [sg.Text('Enter constants: ')],
-                [sg.Text(f'Mass of empty basket [kg] :'), sg.Input(default_text=mo_default, key="m0")],
-                [sg.Text(f'Destination function distance constant:'), sg.Input(default_text=c_l_default, key="c_l")],
-                [sg.Text(f'Destination function fatigue constant:'), sg.Input(default_text=c_f_default, key="c_f")],
-                [sg.Text(f'Distance constant:'), sg.Input(default_text=Ad_default, key="Ad")],
-                [sg.Text(f'DFeromone constant:'), sg.Input(default_text=Afer_default, key="Afer")],
-                [sg.Text(f'Feromone evaporation constant:'), sg.Input(default_text=Evap_default, key="Evap")],
-                [sg.Text(f'Feromon amount:'), sg.Input(default_text=Fero_amount_default, key="Fero_amount")],
-                [sg.Text(f'Distance to shop:'),  sg.Input(default_text=L0_default, key="L0")],
-                [sg.Text(f'Fatigue of getting to the shop:'), sg.Input(default_text=F0_default, key="F0")],
-                [sg.Text(f'Iterations:'), sg.Input(default_text=Iter_default, key="Iter")],
-                [sg.Button("Submit")]
+    const_dict = parse_inputs(default_file)
+    print(const_dict)
+    layout = [  
+                [sg.Text('Enter constants an options: '),],#, sg.Image("Zakupy_w_Auchan/ant_photo.jpg", key="ant_photo")],
+                [sg.Text(f'Mass of empty basket [kg] :'), sg.Input(default_text=const_dict["mo"], key="mo")],
+                [sg.Text(f'Destination function distance constant:'), sg.Input(default_text=const_dict["c_l"], key="c_l")],
+                [sg.Text(f'Destination function fatigue constant:'), sg.Input(default_text=const_dict["c_f"], key="c_f")],
+                [sg.Text(f'Distance constant:'), sg.Input(default_text=const_dict["Ad"], key="Ad")],
+                [sg.Text(f'Feromone constant:'), sg.Input(default_text=const_dict["Afer"], key="Afer")],
+                [sg.Text(f'Feromone evaporation constant:'), sg.Input(default_text=const_dict["Evap"], key="Evap")],
+                [sg.Text(f'Feromon amount:'), sg.Input(default_text=const_dict["Fero_amount"], key="Fero_amount")],
+                [sg.Text(f'Distance to shop:'),  sg.Input(default_text=const_dict["L0"], key="L0")],
+                [sg.Text(f'Fatigue of getting to the shop:'), sg.Input(default_text=const_dict["F0"], key="F0")],
+                [sg.Text(f'Iterations:'), sg.Input(default_text=const_dict["Iter"], key="Iter")],
+                [sg.Text(f'Stop criterion:'),  sg.Radio('Max. iterations', 0, key = "Stop_max_it", default=1), sg.Radio('Imrovement less then epislon', 0, key = "Stop_eps"), sg.Radio('Dest. function less then threshold', 0, key = "Stop_threshold") ],
+                [sg.Text(f'Choosing next product:'),  sg.Radio('Version 1', 1, key = "next_prod_1", default=1), sg.Radio('Version 2 (Dorigo)', 1, key = "next_prod_dorigo"), sg.Radio('Version 3 (Mass)', 1, key = "next_prod_mass"), sg.Radio('Version 4 (Dorigo, Mass incl.)', 1, key = "next_prod_dorigo_mass")],
+                [sg.Text(f'Parameters for Derigo implementation: ')],
+                [sg.Text(f'a: '),sg.Input(default_text=const_dict["a_derigo"], key="a_derigo"), sg.Text(f'b: '), sg.Input(default_text=const_dict["b_derigo"], key="b_derigo")],
+                [sg.Text(f'Leaving feromones:'),  sg.Radio('Ant quantity', 2, key = "fero_ant_quantity", default=1), sg.Radio('Ant quality', 2, key = "fero_ant_quality")],
+                [sg.Text(f'Espilon:'), sg.Input(default_text=const_dict["eps"], key="eps")],
+                [sg.Text(f'Threshold:'), sg.Input(default_text=const_dict["threshold"], key="threshold")],
+                [sg.Button("Submit"), sg.Exit()]
                 ]
+    if (GUION == 1):
+        window = sg.Window("Zakupy w Auchan", layout)
+        
+        while True:
+            event, values = window.read()
+            if event == sg.WIN_CLOSED:
+                break
+            elif event == "Exit":
+                break
+            elif event == "Submit":
+                const_dict = {k: float(values[k])  for (k, v) in values.items()}
+                break
 
-    window = sg.Window("Zakupy w Auchan", layout)
-    const_dict = {"m0": mo_default, "c_l": c_l_default, "c_f": c_f_default, "L0": L0_default , "F0": F0_default, "Ad" : Ad_default, "Af" : Afer_default, "Evap" : Evap_default}
-    while True:
-        event, values = window.read()
-
-        if event == sg.WIN_CLOSED:
-            break
-        elif event == "Submit":
-            const_dict = {k: float(values[k])  for (k, v) in values.items()}
-            break
-
-    window.close()
+        window.close()
     return const_dict
 
 
-def outputs(LS, DL):
-    layout = [  [sg.Text]
+##################################################################################
 
-    ]
 
 # def show_points(LZ: list[Product]) -> None:
 #     x_coords = []

@@ -4,3 +4,5 @@ file.txt
 *.xml
 __pycache__/
 
+file.txt
+*.txt
