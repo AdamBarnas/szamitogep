@@ -22,7 +22,7 @@ def input_constants( GUION = 1 , default_file = "Zakupy_w_Auchan/defautl_values.
     const_dict = parse_inputs(default_file)
     print(const_dict)
     layout = [  
-                [sg.Text('Enter constants: '), sg.Image("Zakupy_w_Auchan/annnt.gif", key="gif_ant")],
+                [sg.Text('Enter constants an options: '),],#, sg.Image("Zakupy_w_Auchan/ant_photo.jpg", key="ant_photo")],
                 [sg.Text(f'Mass of empty basket [kg] :'), sg.Input(default_text=const_dict["mo"], key="mo")],
                 [sg.Text(f'Destination function distance constant:'), sg.Input(default_text=const_dict["c_l"], key="c_l")],
                 [sg.Text(f'Destination function fatigue constant:'), sg.Input(default_text=const_dict["c_f"], key="c_f")],
@@ -33,7 +33,11 @@ def input_constants( GUION = 1 , default_file = "Zakupy_w_Auchan/defautl_values.
                 [sg.Text(f'Distance to shop:'),  sg.Input(default_text=const_dict["L0"], key="L0")],
                 [sg.Text(f'Fatigue of getting to the shop:'), sg.Input(default_text=const_dict["F0"], key="F0")],
                 [sg.Text(f'Iterations:'), sg.Input(default_text=const_dict["Iter"], key="Iter")],
-                [sg.Text(f'Stop criterion:'),  sg.Radio('Max. iterations', 0, key = "Stop_max_it"), sg.Radio('Imrovement less then epislon', 0, key = "Stop_eps"), sg.Radio('Dest. function less then threshold', 0, key = "Stop_threshold") ],
+                [sg.Text(f'Stop criterion:'),  sg.Radio('Max. iterations', 0, key = "Stop_max_it", default=1), sg.Radio('Imrovement less then epislon', 0, key = "Stop_eps"), sg.Radio('Dest. function less then threshold', 0, key = "Stop_threshold") ],
+                [sg.Text(f'Choosing next product:'),  sg.Radio('Version 1', 1, key = "next_prod_1", default=1), sg.Radio('Version 2 (Dorigo)', 1, key = "next_prod_dorigo"), sg.Radio('Version 3 (Mass)', 1, key = "next_prod_mass"), sg.Radio('Version 4 (Dorigo, Mass incl.)', 1, key = "next_prod_dorigo_mass")],
+                [sg.Text(f'Parameters for Derigo implementation: ')],
+                [sg.Text(f'a: '),sg.Input(default_text=const_dict["a_derigo"], key="a_derigo"), sg.Text(f'b: '), sg.Input(default_text=const_dict["b_derigo"], key="b_derigo")],
+                [sg.Text(f'Leaving feromones:'),  sg.Radio('Ant quantity', 2, key = "fero_ant_quantity", default=1), sg.Radio('Ant quality', 2, key = "fero_ant_quality")],
                 [sg.Text(f'Espilon:'), sg.Input(default_text=const_dict["eps"], key="eps")],
                 [sg.Text(f'Threshold:'), sg.Input(default_text=const_dict["threshold"], key="threshold")],
                 [sg.Button("Submit"), sg.Exit()]
@@ -42,9 +46,10 @@ def input_constants( GUION = 1 , default_file = "Zakupy_w_Auchan/defautl_values.
         window = sg.Window("Zakupy w Auchan", layout)
         
         while True:
-            event, values = window.read(timeout=timeout_c)
-            window["gif_ant"].UpdateAnimation("Zakupy_w_Auchan/annnt.gif",time_between_frames=timeout_c)
+            event, values = window.read()
             if event == sg.WIN_CLOSED:
+                break
+            elif event == "Exit":
                 break
             elif event == "Submit":
                 const_dict = {k: float(values[k])  for (k, v) in values.items()}

@@ -36,10 +36,10 @@ def main() -> None:
     #show_best_ants(LZ, best_ant_arr)
 
     #### show output ####
-    window = sg.Window('Matplotlib In PySimpleGUI', layout_output, size=(715, 500), finalize=True, element_justification='center', font='Helvetica 18')
-    tkcanvas = draw_figure(window['-CANVAS-'].TKCanvas, fig)
-    event, values = window.read()
-    window.close()
+    # window = sg.Window('Matplotlib In PySimpleGUI', layout_output, size=(715, 500), finalize=True, element_justification='center', font='Helvetica 18')
+    # tkcanvas = draw_figure(window['-CANVAS-'].TKCanvas, fig)
+    # event, values = window.read()
+    # window.close()
 
     return None
 

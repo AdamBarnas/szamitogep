@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from random import random
 from gui_input import input_constants
 import time
+from random import choices
 #################################################
 ###  TYPES  ###
 #################################################
@@ -66,7 +67,7 @@ pitagorean = "p"
 class Product:
     def __init__(self, ID: int, mass: float, coords: coords_t, name: str) -> None:
         self.ID = ID #product ID
-        self.mass = 1 #product mass
+        self.mass = mass #product mass
         self.coords = coords #product coordinates
         self.name = name #product name
 
@@ -91,7 +92,7 @@ class Ant:
             self.coords = p.coords
         return None
 
-    def choose_next_product(self, AM: np.ndarray, FM: np.ndarray, rand: float =random()) -> int:
+    def choose_next_product(self, AM: np.ndarray, FM: np.ndarray, LZ, rand: float =random()) -> int:
         last_p_id = self.visited[-1]
         sum_cost = 0.0
         cost_list = []
@@ -99,10 +100,15 @@ class Ant:
             if id in self.visited or id == entry_ID or (id == AM.shape[0] - 1 and -1 in self.visited) or (id == AM.shape[0] - 1 and self.visited[0] == 0 and len(self.visited) < AM.shape[0] -1):
                 cost_list.append(-1)
             else:
-                val = (1 + A_fer*FM[last_p_id, id])/(A_dist*AM[last_p_id, id])
+                if CD["next_prod_1"] == 1:
+                    val = (1 + A_fer*FM[last_p_id, id])/(A_dist*AM[last_p_id, id])
+                elif CD["next_prod_mass"] == 1:
+                    mass_prod = LZ[id].mass
+                    val = (1 + A_fer*FM[last_p_id, id])/(A_dist*AM[last_p_id, id]*(mass_prod))
                 cost_list.append(val + sum_cost)
                 sum_cost += val
         rand_val = rand * sum_cost
+
 
         if sum_cost == 0:
             return None
@@ -112,6 +118,38 @@ class Ant:
             id += 1
 
         return id
+    
+
+    def choose_next_product_dorigo(self, AM: np.ndarray, FM: np.ndarray, LZ, rand: float =random()) -> int:
+        last_p_id = self.visited[-1]
+        alfa = CD["a_derigo"]
+        beta = CD["b_derigo"]
+        sum_cost = 0.0
+        cost_list = []
+        sum_fer = np.sum(FM[last_p_id,:]**alfa)
+        sum_dist = np.sum(AM[last_p_id,:]**beta)
+        for id in range(AM.shape[0]):
+            mass_prod = LZ[id].mass
+            if id in self.visited or id == entry_ID or (id == AM.shape[0] - 1 and -1 in self.visited) or (id == AM.shape[0] - 1 and self.visited[0] == 0 and len(self.visited) < AM.shape[0] -1):
+                cost_list.append(0)
+            else:
+                if CD["next_prod_dorigo"] == 1:
+                    val = (sum_dist*FM[last_p_id, id]**alfa)/(sum_fer*AM[last_p_id, id]**beta)
+                elif CD["next_prod_dorigo_mass"] == 1:
+                    if mass_prod != 0: 
+                        val = (sum_dist*FM[last_p_id, id]**alfa)/(mass_prod*sum_fer*AM[last_p_id, id]**beta)
+                    else:
+                        val = 1
+                cost_list.append(val)
+                sum_cost += val
+        rand_val = rand * sum_cost
+        if sum_cost == 0:
+            return None
+        weights = list(range(1,100, int(100/len(cost_list))))
+        #id = cost_list.index(max(cost_list))
+        id = choices(list(range(len(LZ))), weights = cost_list)
+        return id[0]
+    
 
     def arrange_visited(self) -> None:
         N = len(self.visited)
@@ -144,11 +182,13 @@ class Ant:
         self.dest_fun = total_distance * C_dist + total_fatigue * C_fat
         return None
 
-    def leave_feromone_trail(self, FM: np.ndarray) -> None:
+    def leave_feromone_trail_quantity(self, FM: np.ndarray) -> None:
         for i in range(len(self.visited) - 1):
             FM[self.visited[i], self.visited[i+1]] += Fero_amount / self.dest_fun
     
-
+    def leave_feromone_trail_density(self, FM: np.ndarray) -> None:
+        for i in range(len(self.visited) - 1):
+            FM[self.visited[i], self.visited[i+1]] += Fero_amount
                 
         
     def __str__(self) -> str:
@@ -255,7 +295,19 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
         for iter in range(N-1): # number of passes to do single pass through whole shop
 
             for ant in AL: # all ants move once
-                id = ant.choose_next_product(AM, FM, random())
+                #choose next product:
+                if CD["next_prod_1"] == 1:
+                    id = ant.choose_next_product(AM, FM, LZ, random())
+                    next_prod_method = "Method 1"
+                elif CD["next_prod_dorigo"] == 1:
+                    id = ant.choose_next_product_dorigo(AM, FM, LZ, random())
+                    next_prod_method = "Method 2 (Dorigo)"
+                elif CD["next_prod_mass"] == 1:
+                    id = ant.choose_next_product(AM, FM, LZ, random())
+                    next_prod_method = "Method 3 (Mass incl.)"
+                elif CD["next_prod_dorigo_mass"] == 1:
+                    id = ant.choose_next_product_dorigo(AM, FM, LZ, random())
+                    next_prod_method = "Method 4 (Dorigo, Mass incl.)"
                 if id != None:
                     ant.goto_next_product(LZ[id])
                 else:
@@ -272,7 +324,13 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                 best_ant = ant
                 best_iter = i
                 better_list.append((i, best_sol))
-            ant.leave_feromone_trail(FM)
+            #leaving feromone trail:
+            if CD["fero_ant_quality"] == 1:
+                ant.leave_feromone_trail_quantity(FM)
+                leave_fero_method = "quality"
+            elif CD["fero_ant_quantity"] == 1:
+                ant.leave_feromone_trail_quantity(FM)
+                leave_fero_method = "quantity"
         
         file.write("Iteration:" + str(i) + "\n")
         for ant in AL:
@@ -335,7 +393,9 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                                     f"Disatnce to shop: {L0}\n" + \
                                     f"Fatigue of getting to shop: {F0}\n" + \
                                     f"Max. number of iterations: {Iter}\n" + \
-                                    f"Epsilon: {A_fer}, Threshold: {threshold}"
+                                    f"Epsilon: {A_fer}, Threshold: {threshold}" + \
+                                    f"Choosing next product: {next_prod_method}" + \
+                                    f"Leaving feromones: {leave_fero_method}"
     return best_ant.visited, best_ant_arr, FM, i, text_summary+parameters_summary
 
 
