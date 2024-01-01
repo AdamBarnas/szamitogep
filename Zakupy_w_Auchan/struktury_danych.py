@@ -30,7 +30,7 @@ F0 = CD["F0"] # 100  # fatigue of getting to the shop
 Iter = CD["Iter"] #1000 #number of iterations
 eps = CD["eps"]
 threshold = CD["threshold"]
-
+MMAS_ver = CD["MMAS_ver"]
 
 entry_ID = 0
 entry_coords1 = (7, 765)
@@ -128,13 +128,21 @@ class Ant:
         cost_list = []
         sum_fer = np.sum(FM[last_p_id,:]**alfa)
         sum_dist = np.sum(AM[last_p_id,:]**beta)
+        den = 0.0
+        for id in range(AM.shape[0]):
+            fm = FM[last_p_id, id]
+            am_inv = 1/AM[last_p_id, id]
+            if am_inv == np.inf:
+                am_inv = 0
+            den =  den + (fm**alfa)*(am_inv**beta)
         for id in range(AM.shape[0]):
             mass_prod = LZ[id].mass
             if id in self.visited or id == entry_ID or (id == AM.shape[0] - 1 and -1 in self.visited) or (id == AM.shape[0] - 1 and self.visited[0] == 0 and len(self.visited) < AM.shape[0] -1):
                 cost_list.append(0)
             else:
                 if CD["next_prod_dorigo"] == 1:
-                    val = (sum_dist*FM[last_p_id, id]**alfa)/(sum_fer*AM[last_p_id, id]**beta)
+                    #val2 = (sum_dist*FM[last_p_id, id]**alfa)/(sum_fer*AM[last_p_id, id]**beta)
+                    val = ((FM[last_p_id, id]**alfa)*(1/AM[last_p_id, id])**beta)/den
                 elif CD["next_prod_dorigo_mass"] == 1:
                     if mass_prod != 0: 
                         val = (sum_dist*FM[last_p_id, id]**alfa)/(mass_prod*sum_fer*AM[last_p_id, id]**beta)
@@ -142,10 +150,8 @@ class Ant:
                         val = 1
                 cost_list.append(val)
                 sum_cost += val
-        rand_val = rand * sum_cost
         if sum_cost == 0:
             return None
-        weights = list(range(1,100, int(100/len(cost_list))))
         #id = cost_list.index(max(cost_list))
         id = choices(list(range(len(LZ))), weights = cost_list)
         return id[0]
@@ -185,10 +191,27 @@ class Ant:
     def leave_feromone_trail_quantity(self, FM: np.ndarray) -> None:
         for i in range(len(self.visited) - 1):
             FM[self.visited[i], self.visited[i+1]] += Fero_amount / self.dest_fun
+
     
     def leave_feromone_trail_density(self, FM: np.ndarray) -> None:
         for i in range(len(self.visited) - 1):
             FM[self.visited[i], self.visited[i+1]] += Fero_amount
+
+
+    def leave_feromone_trail_quantity_MMAS(self, FM: np.ndarray, best_ant) -> None:
+        a_mmas = 100
+        t_delta = 1/self.dest_fun
+        t_max =  1/ ((1-Evap) * best_ant.dest_fun)
+        t_min = t_max/a_mmas
+        for i in range(len(self.visited) - 1):
+            t_tmp = FM[self.visited[i], self.visited[i+1]] + t_delta
+            if (t_tmp > t_max):
+                FM[self.visited[i], self.visited[i+1]] = t_max
+            elif (t_tmp < t_min):
+                FM[self.visited[i], self.visited[i+1]] = t_min
+            else: 
+                FM[self.visited[i], self.visited[i+1]] = t_tmp
+
                 
         
     def __str__(self) -> str:
@@ -275,6 +298,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     best_sol = float("inf")
     best_iter = 0
     best_ant_arr = []
+    best_ant_in_iter_arr = []
     best_ant = None
     i = 0
 
@@ -293,7 +317,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     while(flag_continue):
         AL = create_ant_list(LZ)
         for iter in range(N-1): # number of passes to do single pass through whole shop
-
+            best_ant_in_iter = AL[0]
             for ant in AL: # all ants move once
                 #choose next product:
                 if CD["next_prod_1"] == 1:
@@ -313,24 +337,37 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                 else:
                     break
         
-        FM = FM * Evap
+        #update feromone matrix
+        if MMAS_ver == 1:
+            if i < iter*0.1:
+                FM = FM * 1.5* Evap #in MMAS slow down evaporation at the beggining
+            else:
+                FM = FM * Evap #then evaporate with normal rate
+        else:
+            FM = FM * Evap
+        
         
         # best_ant = AL[0]
         for ant in AL:
             ant.calculate_destination_function(LZ, AM)
             # print(ant.ID, ": ", ant.dest_fun)
+            if ant.dest_fun < best_ant_in_iter.dest_fun:
+                best_ant_in_iter = ant
             if ant.dest_fun < best_sol:
                 best_sol = ant.dest_fun
                 best_ant = ant
                 best_iter = i
                 better_list.append((i, best_sol))
-            #leaving feromone trail:
-            if CD["fero_ant_quality"] == 1:
-                ant.leave_feromone_trail_quantity(FM)
-                leave_fero_method = "quality"
-            elif CD["fero_ant_quantity"] == 1:
-                ant.leave_feromone_trail_quantity(FM)
-                leave_fero_method = "quantity"
+            if MMAS_ver == 1:
+                pass
+            else:
+            #leaving feromone trail in "traditional" version: 
+                if CD["fero_ant_density"] == 1:
+                    ant.leave_feromone_trail_density(FM)
+                    leave_fero_method = "density"
+                elif CD["fero_ant_quantity"] == 1:
+                    ant.leave_feromone_trail_quantity(FM)
+                    leave_fero_method = "quantity"
         
         file.write("Iteration:" + str(i) + "\n")
         for ant in AL:
@@ -340,6 +377,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
             file.write(";dest_fun:" + str(ant.dest_fun))
             file.write("\n")
         
+        best_ant_in_iter_arr.append(best_ant_in_iter)
         best_ant_arr.append(best_ant)
         file.write("best_ant:\n")      
         file.write("ID:" + str(best_ant.ID))
@@ -350,7 +388,9 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
 
         file.write("Feromone matrix:\n")
         file.write(str(FM) + "\n")
-
+        if MMAS_ver == 1:
+            best_ant_in_iter.leave_feromone_trail_quantity_MMAS(FM, best_ant)
+            leave_fero_method = "quantity (MMAS)"
         i += 1
         #check for stop
         if (i > I):
@@ -396,6 +436,6 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                                     f"Epsilon: {A_fer}, Threshold: {threshold}" + \
                                     f"Choosing next product: {next_prod_method}" + \
                                     f"Leaving feromones: {leave_fero_method}"
-    return best_ant.visited, best_ant_arr, FM, i, text_summary+parameters_summary
+    return best_ant.visited, best_ant_arr, best_ant_in_iter_arr, FM, i, text_summary+parameters_summary
 
 
