@@ -43,8 +43,9 @@ def main() -> None:
 
 
     a = sd.parse('file.txt')
-    print(a[0]['best_ant']['dest_fun'])
-    # print(a[0]['ants'][9]['visited'])
+    print(a[3]['best_ant']['ID'])
+    print(a[3]['best_ant_in_iter']['ID'])
+    print(a[0]['ants'][9]['visited'])
 
     # a = sd.parse('file.txt')
 
