@@ -5,6 +5,7 @@ from random import random
 from gui_input import input_constants
 import time
 from random import choices
+
 #################################################
 ###  TYPES  ###
 #################################################
@@ -307,11 +308,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     df_tresh = threshold
     no_better_count = 0
     
-    try:
-        file = open("file.txt", "a")
 
-    except IOError:
-            print("Error: The file could not be written.")
 
     start_ACO = time.time()
     while(flag_continue):
@@ -358,6 +355,19 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                 best_ant = ant
                 best_iter = i
                 better_list.append((i, best_sol))
+
+
+        # ant.leave_feromone_trail(FM)
+
+
+        # #leaving feromone trail:
+        # if CD["fero_ant_quality"] == 1:
+        #     ant.leave_feromone_trail_quantity(FM)
+        #     leave_fero_method = "quality"
+        # elif CD["fero_ant_quantity"] == 1:
+        #     ant.leave_feromone_trail_quantity(FM)
+        #     leave_fero_method = "quantity"
+
             if MMAS_ver == 1:
                 pass
             else:
@@ -369,25 +379,44 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
                     ant.leave_feromone_trail_quantity(FM)
                     leave_fero_method = "quantity"
         
-        file.write("Iteration:" + str(i) + "\n")
-        for ant in AL:
-            file.write("ID:" + str(ant.ID))
-            file.write(";visited:" + str(ant.visited))
-            file.write(";coords:" + str(ant.coords)) 
-            file.write(";dest_fun:" + str(ant.dest_fun))
-            file.write("\n")
+        try:
+            with open("file.txt", "a") as file:
+                file.write("Iteration:" + str(i) + "\n")
+                for ant in AL:
+                    file.write("ID:" + str(ant.ID))
+                    file.write(";visited:" + str(ant.visited))
+                    file.write(";coords:" + str(ant.coords)) 
+                    file.write(";dest_fun:" + str(ant.dest_fun))
+                    file.write("\n")
         
-        best_ant_in_iter_arr.append(best_ant_in_iter)
-        best_ant_arr.append(best_ant)
-        file.write("best_ant:\n")      
-        file.write("ID:" + str(best_ant.ID))
-        file.write(";visited:" + str(best_ant.visited))
-        file.write(";coords:" + str(best_ant.coords)) 
-        file.write(";dest_fun:" + str(best_ant.dest_fun))
-        file.write("\n")
+                best_ant_in_iter_arr.append(best_ant_in_iter)
+                best_ant_arr.append(best_ant)
+                file.write("best_ant:\n")      
+                file.write("ID:" + str(best_ant.ID))
+                file.write(";visited:" + str(best_ant.visited))
+                file.write(";coords:" + str(best_ant.coords)) 
+                file.write(";dest_fun:" + str(best_ant.dest_fun))
+                file.write("\n")
 
-        file.write("Feromone matrix:\n")
-        file.write(str(FM) + "\n")
+                file.write("best_ant_in_iter:\n")      
+                file.write("ID:" + str(best_ant_in_iter.ID))
+                file.write(";visited:" + str(best_ant_in_iter.visited))
+                file.write(";coords:" + str(best_ant_in_iter.coords)) 
+                file.write(";dest_fun:" + str(best_ant_in_iter.dest_fun))
+                file.write("\n")
+
+                file.write("Feromone matrix:\n")              
+                integer_FM = numpy_to_matrix(FM)
+                file.write('[' + str(integer_FM[0]) + '\n')
+                for intf in integer_FM:
+                    file.write(' ' + str(intf) + '\n')    
+                file.write(' ' + str(integer_FM[-1]) + ']\n')
+
+
+        except IOError:
+            print("Error: The file could not be written.")
+        
+
         if MMAS_ver == 1:
             best_ant_in_iter.leave_feromone_trail_quantity_MMAS(FM, best_ant)
             leave_fero_method = "quantity (MMAS)"
@@ -419,6 +448,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     # print("AM:\n", AM)  
     # print("FM:\n", FM)
 
+
     #plt.imshow(FM)
     #plt.show()
     #summary text for plot:
@@ -439,3 +469,69 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     return best_ant.visited, best_ant_arr, best_ant_in_iter_arr, FM, i, text_summary+parameters_summary
 
 
+
+def parse(file_name):
+    with open(file_name, 'r') as file:
+        lines = file.readlines()
+    iteration = []
+    feromones_matrixes = []
+    for line in lines:
+        if 'Iteration' in line:
+            if 'Iteration:0' not in line:
+                iteration.append(ants_attributes)
+            matrix_as_str = ''
+            feromone_matrix = []
+            ants_attributes = []
+            data = {}
+            gather_matrix = False
+        if 'ID' in line:
+            params = line.split(';')
+            for param in params[0:]:
+                key = param.split(':')[0]
+                val = param.split(':')[1]
+                data[key] = val
+            data['visited'] = list(data['visited'].strip('][').split(', '))
+            data['coords'] = eval(data['coords'])
+            data['dest_fun'] = data['dest_fun'].strip('\n')
+            ants_attributes.append(data)
+            data = {}
+
+        if '[[' in line:
+            gather_matrix = True
+
+        if '[' in line and gather_matrix:
+            if '[[' in line:
+                matrix_as_str = line[1:]
+            elif ']]' in line:
+                matrix_as_str = line[1:-2]
+            else:
+                matrix_as_str = line[1:]
+            feromone_matrix.append(eval(matrix_as_str))
+
+        if ']]' in line:
+            gather_matrix = False
+            feromones_matrixes.append(feromone_matrix)
+
+    for i in range(0, len(iteration)):
+        best_ant = iteration[i][-2]
+        best_ant_in_iter = iteration[i][-1]
+        iteration[i] = iteration[i][:-1]
+        iteration[i] = {'ants': iteration[i],
+                        'best_ant': best_ant,
+                        'best_ant_in_iter' : best_ant_in_iter,
+                        'feromones_matrix': feromones_matrixes[i]}
+
+    return iteration
+
+
+def numpy_to_matrix(matrix):
+    tmp = []
+    c = []
+
+    for mat in matrix:
+        tmp = []
+        for m in mat:
+            tmp.append(float(m))
+        c.append(tmp)
+    
+    return c
