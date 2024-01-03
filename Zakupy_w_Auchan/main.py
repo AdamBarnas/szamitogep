@@ -17,11 +17,11 @@ import PySimpleGUI as sg
 def main() -> None:
     db = Database()
 
-    shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, "Makaron pełnoziarnisty świdry")
-    shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, "Majonez Winiary")
+    shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, "Entry")
+    shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, "Exit")
 
     LZ = [sd.shop_entry]
-    for i in range(15):
+    for i in range(15):                          # prarametr ilości produktów
         LZ.append(db.get_productinfo(i+1))
     LZ.append(sd.shop_exit)
     # for product in LZ:
