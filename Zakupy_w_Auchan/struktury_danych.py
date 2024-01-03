@@ -1,10 +1,12 @@
 import typing
+import settings
 import numpy as np
 import matplotlib.pyplot as plt
 from random import random
 from gui_input import input_constants
 import time
 from random import choices
+import pickle
 
 #################################################
 ###  TYPES  ###
@@ -16,22 +18,32 @@ coords_t = tuple[float, float]
 ###  CONSTANTS  ###
 #################################################
 
-#M0 = 0 # 0.5  # empty basket mass
-CD = input_constants()
-print(CD)
-M0 = CD["mo"]
-C_dist = CD["c_l"]   # destination function distance constant
-C_fat = CD["c_f"]  # destination function fatigue constant
-A_dist = CD["Ad"]   # distance constant
-A_fer = CD["Afer"]   # feromone constant
-Evap = CD["Evap"] #0.8 # feromone evaporation constant
-Fero_amount = CD["Fero_amount"] #10000000 # feromone amount left on trail segment to be devided by destination function value
-L0 = CD["L0"] # 500  # distance to the shop
-F0 = CD["F0"] # 100  # fatigue of getting to the shop
-Iter = CD["Iter"] #1000 #number of iterations
-eps = CD["eps"]
-threshold = CD["threshold"]
-MMAS_ver = CD["MMAS_ver"]
+# M0 = CD["M0"]
+# C_dist = CD["c_l"]   # destination function distance constant
+# C_fat = CD["c_f"]  # destination function fatigue constant
+# L0 = CD["L0"] # 500  # distance to the shop
+# F0 = CD["F0"] # 100  # fatigue of getting to the shop
+# MMAS_ver = CD["MMAS_ver"]
+# all_leave_fero=CD["all_leave_fero"]
+# best_in_iter_leave_fero=CD["best_in_iter_leave_fero"]
+# Evap = CD["Evap"] #0.8 # feromone evaporation constant
+# Fero_amount = CD["Fero_amount"] #10000000 # feromone amount left on trail segment to be devided by destination function value
+# fero_ant_quantity = CD["fero_ant_quantity"]
+# fero_ant_density = CD["fero_ant_density"]
+# Iter = CD["Iter"] #1000 #number of iterations
+# Stop_max_it=CD["Stop_max_it"]
+# Stop_eps=CD["Stop_eps"]
+# eps=CD["eps"]
+# Stop_threshold=CD["Stop_threshold"]
+# threshold=CD["threshold"]
+# next_prod_1=CD["next_prod_1"]
+# next_prod_2=CD["next_prod_2"]
+# next_prod_3=CD["next_prod_3"]
+# next_prod_4=CD["next_prod_4"]
+# A_dist = CD["A_dist"]   # distance constant
+# A_fer = CD["A_fer"]   # feromone constant
+# beta=CD["beta"]
+# alpha=CD["alpha"]
 
 entry_ID = 0
 entry_coords1 = (7, 765)
@@ -93,7 +105,7 @@ class Ant:
             self.coords = p.coords
         return None
 
-    def choose_next_product(self, AM: np.ndarray, FM: np.ndarray, LZ, rand: float =random()) -> int:
+    def choose_next_product(self, AM: np.ndarray, FM: np.ndarray, LZ, A_fer, A_dist, next_prod_1, next_prod_3, rand: float =random()) -> int:
         last_p_id = self.visited[-1]
         sum_cost = 0.0
         cost_list = []
@@ -101,9 +113,9 @@ class Ant:
             if id in self.visited or id == entry_ID or (id == AM.shape[0] - 1 and -1 in self.visited) or (id == AM.shape[0] - 1 and self.visited[0] == 0 and len(self.visited) < AM.shape[0] -1):
                 cost_list.append(-1)
             else:
-                if CD["next_prod_1"] == 1:
+                if next_prod_1 == 1:
                     val = (1 + A_fer*FM[last_p_id, id])/(A_dist*AM[last_p_id, id])
-                elif CD["next_prod_mass"] == 1:
+                elif next_prod_3 == 1:
                     mass_prod = LZ[id].mass
                     val = (1 + A_fer*FM[last_p_id, id])/(A_dist*AM[last_p_id, id]*(mass_prod))
                 cost_list.append(val + sum_cost)
@@ -121,10 +133,10 @@ class Ant:
         return id
     
 
-    def choose_next_product_dorigo(self, AM: np.ndarray, FM: np.ndarray, LZ, rand: float =random()) -> int:
+    def choose_next_product_dorigo(self, AM: np.ndarray, FM: np.ndarray, LZ, alpha, beta, next_prod_2, next_prod_4, rand: float =random()) -> int:
         last_p_id = self.visited[-1]
-        alfa = CD["a_derigo"]
-        beta = CD["b_derigo"]
+        alfa = alpha
+        beta = beta
         sum_cost = 0.0
         cost_list = []
         sum_fer = np.sum(FM[last_p_id,:]**alfa)
@@ -141,10 +153,10 @@ class Ant:
             if id in self.visited or id == entry_ID or (id == AM.shape[0] - 1 and -1 in self.visited) or (id == AM.shape[0] - 1 and self.visited[0] == 0 and len(self.visited) < AM.shape[0] -1):
                 cost_list.append(0)
             else:
-                if CD["next_prod_dorigo"] == 1:
+                if next_prod_2 == 1:
                     #val2 = (sum_dist*FM[last_p_id, id]**alfa)/(sum_fer*AM[last_p_id, id]**beta)
                     val = ((FM[last_p_id, id]**alfa)*(1/AM[last_p_id, id])**beta)/den
-                elif CD["next_prod_dorigo_mass"] == 1:
+                elif next_prod_4 == 1:
                     if mass_prod != 0: 
                         val = (sum_dist*FM[last_p_id, id]**alfa)/(mass_prod*sum_fer*AM[last_p_id, id]**beta)
                     else:
@@ -175,7 +187,7 @@ class Ant:
         self.visited = arranged
         return None
     
-    def calculate_destination_function(self, LZ: list[Product], AM: np.ndarray) -> None:
+    def calculate_destination_function(self, LZ: list[Product], C_dist, C_fat, AM: np.ndarray) -> None:
         self.arrange_visited()
         N = len(LZ)
         total_distance = 0
@@ -189,17 +201,17 @@ class Ant:
         self.dest_fun = total_distance * C_dist + total_fatigue * C_fat
         return None
 
-    def leave_feromone_trail_quantity(self, FM: np.ndarray) -> None:
+    def leave_feromone_trail_quantity(self, FM: np.ndarray, Fero_amount) -> None:
         for i in range(len(self.visited) - 1):
             FM[self.visited[i], self.visited[i+1]] += Fero_amount / self.dest_fun
 
     
-    def leave_feromone_trail_density(self, FM: np.ndarray) -> None:
+    def leave_feromone_trail_density(self, FM: np.ndarray, Fero_amount) -> None:
         for i in range(len(self.visited) - 1):
             FM[self.visited[i], self.visited[i+1]] += Fero_amount
 
 
-    def leave_feromone_trail_quantity_MMAS(self, FM: np.ndarray, best_ant) -> None:
+    def leave_feromone_trail_quantity_MMAS(self, FM: np.ndarray, best_ant, Evap) -> None:
         a_mmas = 100
         t_delta = 1/self.dest_fun
         t_max =  1/ ((1-Evap) * best_ant.dest_fun)
@@ -280,7 +292,7 @@ def create_feromone_matrix(LZ: list[Product]):
 #################################################
 ###  SPECIAL OBJECTS  ###
 #################################################
-
+M0 = 10
 shop_entry = Product(entry_ID, M0, entry_coords1, entry_name)
 shop_exit = Product(exit_ID, 0, exit_coords1, exit_name)
 
@@ -290,7 +302,36 @@ shop_exit = Product(exit_ID, 0, exit_coords1, exit_name)
 
 #stop = 1: stop when improvement beteen iterations is less then eps
 #stop = 2: stop if destination funct. is less then treshold: df_tresh 
-def ant_algorithm(LZ: list[Product]) -> list[Ant]:
+def ant_algorithm(LZ: list[Product], CD) -> list[Ant]:
+
+    M0 = CD["M0"]
+    C_dist = CD["c_l"]   # destination function distance constant
+    C_fat = CD["c_f"]  # destination function fatigue constant
+    L0 = CD["L0"] # 500  # distance to the shop
+    F0 = CD["F0"] # 100  # fatigue of getting to the shop
+    MMAS_ver = CD["MMAS_ver"]
+    all_leave_fero=CD["all_leave_fero"]
+    best_in_iter_leave_fero=CD["best_in_iter_leave_fero"]
+    Evap = CD["Evap"] #0.8 # feromone evaporation constant
+    Fero_amount = CD["Fero_amount"] #10000000 # feromone amount left on trail segment to be devided by destination function value
+    fero_ant_quantity = CD["fero_ant_quantity"]
+    fero_ant_density = CD["fero_ant_density"]
+    Iter = CD["Iter"] #1000 #number of iterations
+    Stop_max_it=CD["Stop_max_it"]
+    Stop_eps=CD["Stop_eps"]
+    eps=CD["eps"]
+    Stop_threshold=CD["Stop_threshold"]
+    threshold=CD["threshold"]
+    next_prod_1=CD["next_prod_1"]
+    next_prod_2=CD["next_prod_2"]
+    next_prod_3=CD["next_prod_3"]
+    next_prod_4=CD["next_prod_4"]
+    A_dist = CD["A_dist"]   # distance constant
+    A_fer = CD["A_fer"]   # feromone constant
+    beta=CD["beta"]
+    alpha=CD["alpha"]
+    N=CD["N"]
+
     I = Iter
     N = len(LZ)
     AM = calculate_adjacency_matrix(LZ)
@@ -307,7 +348,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     #stop condition selection, if nothing is choosen it will stop after max iter I
     df_tresh = threshold
     no_better_count = 0
-    
+    eps_tmp_prev = 0
 
 
     start_ACO = time.time()
@@ -318,16 +359,16 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
             for ant in AL: # all ants move once
                 #choose next product:
                 if CD["next_prod_1"] == 1:
-                    id = ant.choose_next_product(AM, FM, LZ, random())
+                    id = ant.choose_next_product(AM, FM, LZ, A_fer, A_dist, next_prod_1, next_prod_3, random())
                     next_prod_method = "Method 1"
-                elif CD["next_prod_dorigo"] == 1:
-                    id = ant.choose_next_product_dorigo(AM, FM, LZ, random())
+                elif CD["next_prod_2"] == 1:
+                    id = ant.choose_next_product_dorigo(AM, FM, LZ, alpha, beta, next_prod_2, next_prod_4, random())
                     next_prod_method = "Method 2 (Dorigo)"
-                elif CD["next_prod_mass"] == 1:
-                    id = ant.choose_next_product(AM, FM, LZ, random())
+                elif CD["next_prod_3"] == 1:
+                    id = ant.choose_next_product(AM, FM, LZ, A_fer, A_dist, random())
                     next_prod_method = "Method 3 (Mass incl.)"
-                elif CD["next_prod_dorigo_mass"] == 1:
-                    id = ant.choose_next_product_dorigo(AM, FM, LZ, random())
+                elif CD["next_prod_4"] == 1:
+                    id = ant.choose_next_product_dorigo(AM, FM, LZ, alpha, beta, next_prod_2, next_prod_4, random())
                     next_prod_method = "Method 4 (Dorigo, Mass incl.)"
                 if id != None:
                     ant.goto_next_product(LZ[id])
@@ -346,7 +387,7 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
         
         # best_ant = AL[0]
         for ant in AL:
-            ant.calculate_destination_function(LZ, AM)
+            ant.calculate_destination_function(LZ, C_dist, C_fat, AM)
             # print(ant.ID, ": ", ant.dest_fun)
             if ant.dest_fun < best_ant_in_iter.dest_fun:
                 best_ant_in_iter = ant
@@ -373,10 +414,10 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
             else:
             #leaving feromone trail in "traditional" version: 
                 if CD["fero_ant_density"] == 1:
-                    ant.leave_feromone_trail_density(FM)
+                    ant.leave_feromone_trail_density(FM, Fero_amount)
                     leave_fero_method = "density"
                 elif CD["fero_ant_quantity"] == 1:
-                    ant.leave_feromone_trail_quantity(FM)
+                    ant.leave_feromone_trail_quantity(FM, Fero_amount)
                     leave_fero_method = "quantity"
         
         try:
@@ -417,24 +458,24 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
             print("Error: The file could not be written.")
         
 
-        if MMAS_ver == 1:
-            best_ant_in_iter.leave_feromone_trail_quantity_MMAS(FM, best_ant)
+        if (MMAS_ver == 1) or (best_in_iter_leave_fero == 1):
+            best_ant_in_iter.leave_feromone_trail_quantity_MMAS(FM, best_ant, Evap)
             leave_fero_method = "quantity (MMAS)"
         i += 1
         #check for stop
         if (i > I):
             flag_continue = False
             stop_crierion = "Max. iterations"
-        elif ((i > 2) & bool(CD["Stop_eps"])) :
-            for i_bl in range(1,len(better_list)):
-                if (better_list[-1][0] != better_list[-i_bl-1][0]):
-                    if (abs(better_list[-1][1]-better_list[-i_bl-1][1]) < eps):
+        elif ((i > 2) & bool(Stop_eps)) :
+                eps_tmp = abs(better_list[-1][1]-better_list[-2][1])
+                if (abs(eps_tmp-eps_tmp_prev)< eps):
                         no_better_count += 1
-                        if no_better_count > 5:
+                        if no_better_count > N:
                             flag_continue = False
                             stop_crierion = f"Improvment of dest. function by less than {eps} for 5 iterations."
                             break
-        elif( (better_list[-1][1] < df_tresh) & bool(CD["Stop_threshold"])):
+                eps_tmp_prev = eps_tmp
+        elif( (better_list[-1][1] < df_tresh) & bool(Stop_threshold)):
             flag_continue = False
             stop_crierion = f"Dest. function below treshold: {df_tresh}"
 
@@ -506,7 +547,8 @@ def parse(file_name):
                 matrix_as_str = line[1:-2]
             else:
                 matrix_as_str = line[1:]
-            feromone_matrix.append(eval(matrix_as_str))
+            #feromone_matrix.append(eval(matrix_as_str))
+            feromone_matrix.append(matrix_as_str)    
 
         if ']]' in line:
             gather_matrix = False
