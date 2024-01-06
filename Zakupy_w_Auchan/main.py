@@ -9,7 +9,7 @@ from random import random
 import random as r
 import PySimpleGUI as sg
 from gui_v2 import *
-import pickle
+import os
 
 # r.seed(19216812)
 
@@ -108,8 +108,10 @@ def gui_v2_fnc(db):
             fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=1, show = 1, safe_path="pictures1")
             
             if PARSE_ON == 1:
-                a = sd.parse('file.txt')
-                print(a[3]['best_ant_dest_fun'])
+                base_path = os.path.abspath(os.path.dirname(__file__))
+                filename_parse = os.path.join(base_path, 'tests', 'file6.txt')
+                a = sd.parse(filename_parse)
+                print(a[2]['best_ant_dest_fun'])
                 window.close()
     return None
 ###################################
