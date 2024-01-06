@@ -15,9 +15,9 @@ import pickle
 
 np.set_printoptions(precision=0, floatmode="maxprec")
 CD = const_dict
-GUI_ON = 1
-PARSE_ON = 1
-PLOT_ON = 1
+GUI_ON = 0
+PARSE_ON = 0
+PLOT_ON = 0
 
 def main() -> None:
 
@@ -35,7 +35,7 @@ def main() -> None:
                 LZ.append(db.get_productinfo(i+1))
             LZ.append(sd.shop_exit)
             best_sol, best_ant_arr, best_ant_in_iter_arr, FM, iter, text = sd.ant_algorithm(LZ, CD)
-            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=1, show = 1)
+            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=0, show = 0, safe_path="folder1/pictures1")
             if PARSE_ON == 1:
                 a = sd.parse('file.txt')
                 print(a[3]['best_ant']['ID'])
