@@ -16,7 +16,7 @@ import pickle
 np.set_printoptions(precision=0, floatmode="maxprec")
 CD = const_dict
 GUI_ON = 1
-PARSE_ON = 0
+PARSE_ON = 1
 PLOT_ON = 1
 
 def main() -> None:
@@ -109,9 +109,7 @@ def gui_v2_fnc(db):
             
             if PARSE_ON == 1:
                 a = sd.parse('file.txt')
-                print(a[3]['best_ant']['ID'])
-                print(a[3]['best_ant_in_iter']['ID'])
-                print(a[0]['ants'][9]['visited'])
+                print(a[3]['best_ant_dest_fun'])
                 window.close()
     return None
 ###################################
