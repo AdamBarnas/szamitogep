@@ -13,10 +13,11 @@ import pickle
 
 # r.seed(19216812)
 
-# np.set_printoptions(precision=0, floatmode="maxprec")
+np.set_printoptions(precision=0, floatmode="maxprec")
 CD = const_dict
 GUI_ON = 1
 PARSE_ON = 0
+PLOT_ON = 1
 
 def main() -> None:
 
@@ -34,7 +35,7 @@ def main() -> None:
                 LZ.append(db.get_productinfo(i+1))
             LZ.append(sd.shop_exit)
             best_sol, best_ant_arr, best_ant_in_iter_arr, FM, iter, text = sd.ant_algorithm(LZ, CD)
-            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=1)
+            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=1, show = 1)
             if PARSE_ON == 1:
                 a = sd.parse('file.txt')
                 print(a[3]['best_ant']['ID'])
@@ -73,12 +74,7 @@ def main() -> None:
 ###################################
 def gui_v2_fnc(db):
 
-    LZ = [sd.shop_entry]
-    for i in range(15):                          # prarametr ilości produktów
-        LZ.append(db.get_productinfo(i+1))
-    LZ.append(sd.shop_exit)
-
-    window = sg.Window('Test window', layout)
+    window = sg.Window('Test window', layout, size = (480,400))
     layout_nr = 1
 
     while True:
@@ -109,7 +105,8 @@ def gui_v2_fnc(db):
                 LZ.append(db.get_productinfo(i+1))
             LZ.append(sd.shop_exit)
             best_sol, best_ant_arr, best_ant_in_iter_arr, FM, iter, text = sd.ant_algorithm(LZ, CD)
-            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=1)
+            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=1, show = 1, safe_path="pictures1")
+            
             if PARSE_ON == 1:
                 a = sd.parse('file.txt')
                 print(a[3]['best_ant']['ID'])
@@ -118,4 +115,5 @@ def gui_v2_fnc(db):
                 window.close()
     return None
 ###################################
+
 main()

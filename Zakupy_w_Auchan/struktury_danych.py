@@ -8,6 +8,9 @@ import time
 from random import choices
 import pickle
 
+np.set_printoptions(precision=0, floatmode="maxprec")
+
+
 #################################################
 ###  TYPES  ###
 #################################################

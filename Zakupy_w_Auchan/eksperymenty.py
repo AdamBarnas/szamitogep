@@ -1,5 +1,7 @@
 import csv
 
+#eksperyment czyli zmieniamy 1 parametr
+#1. Dla 
 
 ##### STAŁE #####
 file1 = 'Zakupy_w_Auchan/dane_do_eksp.csv'

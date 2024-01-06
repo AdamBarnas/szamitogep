@@ -5,9 +5,13 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import PySimpleGUI as sg
 import matplotlib
+import numpy as np
+
+np.set_printoptions(precision=0, floatmode="maxprec")
+
 
 matplotlib.use('TkAgg')
-def show_points(LZ: list[Product], best_sol, ax) -> ([list[int], list[int]]):
+def show_points(LZ: list[Product], best_sol, ax, safe_path = None) -> ([list[int], list[int]]):
     x_coords = []
     y_coords = []
     NLZ = []
@@ -27,12 +31,12 @@ def annotate_axes(ax, text, fontsize=18):
     ax.text(0.5, 0.5, text, transform=ax.transAxes,
             ha="center", va="center", fontsize=fontsize, color="darkgrey")
     
-def plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation = 0):
+def plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation = 0, show = 0, safe_path = None):
     fig, axd = plt.subplot_mosaic([['upper left', 'upper left', 'right'],
                                    ['upper left2', 'upper left2', 'right'],
                                ['lower left1', 'lower left2', 'right']],
                               figsize=(12, 6), layout="constrained")
-    plot_dest_func(best_ant_arr, axd["upper left"])
+    plot_dest_func(best_ant_arr, axd["upper left"], "ant_dest123.png")
     plot_dest_func_iter(best_ant_in_iter_arr, axd["upper left2"] )
     plot_FM(FM, axd["lower left2"])
     plot_summary_text(text, axd['lower left1'])
@@ -40,6 +44,21 @@ def plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, bes
     if (animation == 1):
         animate_best_ants(LZ, best_ant_arr, axd["right"], 50)
     fig.suptitle('Summary')
+    if safe_path != None:
+        if isinstance(safe_path, str):
+            fig.savefig(safe_path + r"_fig_all.png")
+            ex_ul = axd["upper left"].get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+            fig.savefig(safe_path + r"_fig_dest_fnc.png" , bbox_inches=ex_ul.expanded(1.1, 1.5))
+            ex_ul2 = axd["upper left2"].get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+            fig.savefig(safe_path + r"_fig_dest_fnc_iter.png" , bbox_inches=ex_ul2.expanded(1.1, 1.5))
+            ex_r = axd["right"].get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+            fig.savefig(safe_path + r"_fig_best_route.png" , bbox_inches=ex_r.expanded(1.4, 1.3))
+            ex_lr2 = axd["lower left2"].get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+            fig.savefig(safe_path + r"_fig_last_FM.png" , bbox_inches=ex_lr2.expanded(3.0, 1.5))
+
+
+        else:
+            print("FILE PATH NOT A STRING")
     #plt.show()
     return fig
 
@@ -54,7 +73,7 @@ def plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, bes
 #     ax.set_ylim([0,10])
     
 
-def plot_dest_func(best_ant_arr, ax):
+def plot_dest_func(best_ant_arr, ax, safe_path = None):
     dest_func_arr = []
     idx_arr = []
     for idx, ant in enumerate(best_ant_arr):
@@ -66,7 +85,7 @@ def plot_dest_func(best_ant_arr, ax):
     return None
 
 
-def plot_dest_func_iter(best_ant_in_iter_arr, ax):
+def plot_dest_func_iter(best_ant_in_iter_arr, ax, safe_path = None):
     dest_func_arr = []
     idx_arr = []
     for idx, ant in enumerate(best_ant_in_iter_arr):
@@ -78,13 +97,14 @@ def plot_dest_func_iter(best_ant_in_iter_arr, ax):
     return None
 
 
-def plot_FM(FM,ax):
+def plot_FM(FM,ax, safe_path = None):
     ax.imshow(FM)
     ax.set_title("Feromone Matrix (last iteration)")
+
     return None
 
 
-def plot_summary_text(text, ax):
+def plot_summary_text(text, ax, safe_path = None):
     ax.text(0,1, text,
                 ha='left', va='top', size=8,
                 bbox=dict(facecolor='none', edgecolor='black', pad=5.0))
@@ -92,7 +112,7 @@ def plot_summary_text(text, ax):
     return None
 
 
-def show_best_ants(LZ, AL):
+def show_best_ants(LZ, AL, safe_path = None):
     AL = AL[0:]
     a = 0.0
     a_incr = 0.1
@@ -114,6 +134,11 @@ def show_best_ants(LZ, AL):
     plt.scatter(x_coords, y_coords)
     plt.imshow(img)
     plt.plot(x_coords, y_coords, "k-")
+    if safe_path != None:
+        if isinstance(safe_path, str):
+            plt.savefig(f"{safe_path}")
+        else:
+            print("FILE PATH NOT A STRING")
     return None
 
 
@@ -136,7 +161,7 @@ def animate_best_ants(LZ, best_ant_arr, ax, delta = 1):
             x_coords, y_coords = get_ant_route(ant, LZ)
             ax.plot(x_coords, y_coords, "k", alpha = alpha)
             plt.pause(0.25)
-    plt.show()
+    #plt.show()
     return None
 
 
