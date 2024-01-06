@@ -17,8 +17,8 @@ import PySimpleGUI as sg
 def main() -> None:
     db = Database()
 
-    shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, "Makaron pełnoziarnisty świdry")
-    shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, "Majonez Winiary")
+    # shop_entry = sd.Product(sd.entry_ID, sd.M0, sd.entry_coords1, entry_name)
+    # shop_exit = sd.Product(sd.exit_ID, 0, sd.exit_coords1, exit_name)
 
     LZ = [sd.shop_entry]
     for i in range(15):
@@ -42,10 +42,10 @@ def main() -> None:
     # window.close()
 
 
-    a = sd.parse('file.txt')
-    print(a[3]['best_ant']['ID'])
-    print(a[3]['best_ant_in_iter']['ID'])
-    print(a[0]['ants'][9]['visited'])
+    # a = sd.parse('file.txt')
+    # print(a[10]['best_ant']['ID'])
+    # print(a[10]['best_ant_in_iter']['ID'])
+    # print(a[10]['ants'][9]['visited'])
 
     # a = sd.parse('file.txt')
 

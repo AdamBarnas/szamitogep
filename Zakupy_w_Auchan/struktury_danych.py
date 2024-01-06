@@ -455,12 +455,12 @@ def ant_algorithm(LZ: list[Product]) -> list[Ant]:
     text_summary = f"SUMMARY:\nBest road: {best_ant.visited}\nNumber of iterations: {i}\nDest. functio: {best_ant.dest_fun}\nStop criterion:{stop_crierion}\nTime: {end_ACO - start_ACO}\n\n"
     parameters_summary = f"PARAMETERS:\nBasket mass: {M0}\nDestination function distance constant: {C_dist}\n"+ \
                                     f"Fatigue constant: {C_fat}\n" + \
-                                    f"Distance cosntant: {A_dist}\n" + \
+                                    f"Distance constant: {A_dist}\n" + \
                                     f"Feromone constant: {A_fer}\n" + \
                                     f"Feromone evaporation constant: {Evap}\n" + \
                                     f"Amount of feromones: {Fero_amount}\n" + \
                                     f"Feromone evaporation constant: {A_fer}\n" + \
-                                    f"Disatnce to shop: {L0}\n" + \
+                                    f"Distance to shop: {L0}\n" + \
                                     f"Fatigue of getting to shop: {F0}\n" + \
                                     f"Max. number of iterations: {Iter}\n" + \
                                     f"Epsilon: {A_fer}, Threshold: {threshold}" + \
