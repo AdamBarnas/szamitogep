@@ -1,5 +1,4 @@
 import typing
-import settings
 import numpy as np
 import matplotlib.pyplot as plt
 from random import random
@@ -117,10 +116,10 @@ class Ant:
                 cost_list.append(-1)
             else:
                 if next_prod_1 == 1:
-                    val = (1 + A_fer*FM[last_p_id, id])/(A_dist*AM[last_p_id, id])
+                    val = (1 + A_fer*10000*FM[last_p_id, id])/(A_dist*AM[last_p_id, id])
                 elif next_prod_3 == 1:
                     mass_prod = LZ[id].mass
-                    val = (1 + A_fer*FM[last_p_id, id])/(A_dist*AM[last_p_id, id]*(mass_prod))
+                    val = (1 + A_fer*10000*FM[last_p_id, id])/(A_dist*AM[last_p_id, id]*(mass_prod))
                 cost_list.append(val + sum_cost)
                 sum_cost += val
         rand_val = rand * sum_cost
@@ -305,7 +304,7 @@ shop_exit = Product(exit_ID, 0, exit_coords1, exit_name)
 
 #stop = 1: stop when improvement beteen iterations is less then eps
 #stop = 2: stop if destination funct. is less then treshold: df_tresh 
-def ant_algorithm(LZ: list[Product], CD) -> list[Ant]:
+def ant_algorithm(LZ: list[Product], CD, folder="tests") -> list[Ant]:
 
     M0 = CD["M0"]
     C_dist = CD["c_l"]   # destination function distance constant
@@ -375,8 +374,8 @@ def ant_algorithm(LZ: list[Product], CD) -> list[Ant]:
         file_read.close()
 
 
-    filename = str('file' + number_of_call + '.txt')
-    filename_save = os.path.join(base_path, 'tests', filename)
+    filename = str('test' + number_of_call + '.txt')
+    filename_save = os.path.join(base_path, folder, filename)
 
     try:
         with open(filename_save, "a") as file:
@@ -400,7 +399,7 @@ def ant_algorithm(LZ: list[Product], CD) -> list[Ant]:
                     id = ant.choose_next_product_dorigo(AM, FM, LZ, alpha, beta, next_prod_2, next_prod_4, random())
                     next_prod_method = "Method 2 (Dorigo)"
                 elif CD["next_prod_3"] == 1:
-                    id = ant.choose_next_product(AM, FM, LZ, A_fer, A_dist, random())
+                    id = ant.choose_next_product(AM, FM, LZ, A_fer, A_dist, next_prod_1, next_prod_3, random())
                     next_prod_method = "Method 3 (Mass incl.)"
                 elif CD["next_prod_4"] == 1:
                     id = ant.choose_next_product_dorigo(AM, FM, LZ, alpha, beta, next_prod_2, next_prod_4, random())
@@ -426,23 +425,12 @@ def ant_algorithm(LZ: list[Product], CD) -> list[Ant]:
             # print(ant.ID, ": ", ant.dest_fun)
             if ant.dest_fun < best_ant_in_iter.dest_fun:
                 best_ant_in_iter = ant
+
             if ant.dest_fun < best_sol:
                 best_sol = ant.dest_fun
                 best_ant = ant
                 best_iter = i
                 better_list.append((i, best_sol))
-
-
-        # ant.leave_feromone_trail(FM)
-
-
-        # #leaving feromone trail:
-        # if CD["fero_ant_quality"] == 1:
-        #     ant.leave_feromone_trail_quantity(FM)
-        #     leave_fero_method = "quality"
-        # elif CD["fero_ant_quantity"] == 1:
-        #     ant.leave_feromone_trail_quantity(FM)
-        #     leave_fero_method = "quantity"
 
             if MMAS_ver == 1:
                 pass
@@ -456,8 +444,8 @@ def ant_algorithm(LZ: list[Product], CD) -> list[Ant]:
                     leave_fero_method = "quantity"
         
 
-            best_ant_in_iter_arr.append(best_ant_in_iter)
-            best_ant_arr.append(best_ant)
+        best_ant_in_iter_arr.append(best_ant_in_iter)
+        best_ant_arr.append(best_ant)
             
 
         try:
@@ -515,10 +503,10 @@ def ant_algorithm(LZ: list[Product], CD) -> list[Ant]:
                                     f"Disatnce to shop: {L0}\n" + \
                                     f"Fatigue of getting to shop: {F0}\n" + \
                                     f"Max. number of iterations: {Iter}\n" + \
-                                    f"Epsilon: {A_fer}, Threshold: {threshold}" + \
-                                    f"Choosing next product: {next_prod_method}" + \
+                                    f"Epsilon: {A_fer}, Threshold: {threshold}, " + \
+                                    f"Choosing next product: {next_prod_method}, " + \
                                     f"Leaving feromones: {leave_fero_method}"
-    return best_ant.visited, best_ant_arr, best_ant_in_iter_arr, FM, i, text_summary+parameters_summary
+    return best_ant.visited, best_ant_arr, best_ant_in_iter_arr, FM, i, text_summary+parameters_summary+"\n\n"
 
 
 

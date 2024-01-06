@@ -1,5 +1,4 @@
 import numpy as np
-import settings
 from baza import Database
 import struktury_danych as sd
 from gui_output import show_points, show_best_ants, plot_dest_func, plot_FM, plot_DestFunc_FM_Map_Summary, animate_best_ants, layout_output, draw_figure
@@ -17,7 +16,7 @@ np.set_printoptions(precision=0, floatmode="maxprec")
 CD = const_dict
 GUI_ON = 0
 PARSE_ON = 0
-PLOT_ON = 0
+PLOT_ON = 1
 
 def main() -> None:
 
@@ -34,40 +33,13 @@ def main() -> None:
             for i in range(int(CD["nr_of_item"])):                          # prarametr ilości produktów
                 LZ.append(db.get_productinfo(i+1))
             LZ.append(sd.shop_exit)
-            best_sol, best_ant_arr, best_ant_in_iter_arr, FM, iter, text = sd.ant_algorithm(LZ, CD)
-            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=0, show = 0, safe_path="folder1/pictures1")
+            best_sol, best_ant_arr, best_ant_in_iter_arr, FM, iter, text = sd.ant_algorithm(LZ, CD, "tests")
+            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=0, show = 0, safe_path="Zakupy_w_Auchan/tests/pictures1")
             if PARSE_ON == 1:
-                a = sd.parse('file.txt')
-                print(a[3]['best_ant']['ID'])
-                print(a[3]['best_ant_in_iter']['ID'])
-                print(a[0]['ants'][9]['visited'])
-
-    # for product in LZ:
-    #     print(product)
-
-    # AM = sd.calculate_adjacency_matrix(LZ)
-    # print(AM)
-
-    #TO OSTATECZNA FUNKCJA: 
-    
-    #show_best_ants(LZ, best_ant_arr)
-
-    #### show output ####
-    # window = sg.Window('Matplotlib In PySimpleGUI', layout_output, size=(715, 500), finalize=True, element_justification='center', font='Helvetica 18')
-    # tkcanvas = draw_figure(window['-CANVAS-'].TKCanvas, fig)
-    # event, values = window.read()
-    # window.close()
-
-
-
-
-    # a = sd.parse('file.txt')
-
-
-    # for b in a:
-    #     print(b)
-
-    # show_points(LZ, best_sol)
+                base_path = os.path.abspath(os.path.dirname(__file__))
+                filename_parse = os.path.join(base_path, 'tests', 'file6.txt')
+                a = sd.parse(filename_parse)
+                print(a[2]['best_ant_dest_fun'])
     return None
 
 
