@@ -6,7 +6,7 @@ from random import random
 from gui_input import input_constants
 import time
 from random import choices
-import pickle
+import os
 
 np.set_printoptions(precision=0, floatmode="maxprec")
 
@@ -354,8 +354,32 @@ def ant_algorithm(LZ: list[Product], CD) -> list[Ant]:
     eps_tmp_prev = 0
 
 
+    base_path = os.path.abspath(os.path.dirname(__file__))
+    filename_calls = os.path.join(base_path, 'tests', 'number_of_call.txt')
+    
+
+    with open(filename_calls, 'r') as file_read:
+        lines = file_read.readlines()
+        if lines:
+            last_line = lines[-1].strip()
+            number_of_call = last_line
+        else:
+            print('File is empty.')
+
+        file_read.close()
+
+
+    with open(filename_calls, 'a') as file_read:
+        new_number = int(number_of_call) + 1
+        file_read.write('\n' + str(new_number))
+        file_read.close()
+
+
+    filename = str('file' + number_of_call + '.txt')
+    filename_save = os.path.join(base_path, 'tests', filename)
+
     try:
-        with open("file.txt", "a") as file:
+        with open(filename_save, "a") as file:
             file.write("Iteration;" + "best_ant_dest_fun;" + "best_ant_in_iter_dest_fun" + "\n")
             file.close()
     except IOError:
@@ -437,7 +461,7 @@ def ant_algorithm(LZ: list[Product], CD) -> list[Ant]:
             
 
         try:
-            with open("file.txt", "a") as file:
+            with open(filename_save, "a") as file:
                 file.write(str(i) + ";" + str(best_ant.dest_fun) + ";" + str(best_ant_in_iter.dest_fun) + "\n")
 
 
@@ -469,7 +493,7 @@ def ant_algorithm(LZ: list[Product], CD) -> list[Ant]:
     end_ACO = time.time()
     i = i-1
     file.close()
-    
+
     print("best\n", best_sol) 
     print("Ant: ", best_iter, "   ", best_ant.visited, "iteration: ", i) 
     print(better_list)
