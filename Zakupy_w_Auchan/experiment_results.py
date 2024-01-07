@@ -61,32 +61,35 @@ for option in options:
         std_best_ant_dest_fun[options.index(option)][it] = np.sqrt(sum_b/10)
         std_best_ant_in_iter_dest_fun[options.index(option)][it] = np.sqrt(sum_i/10)
 
+
+# każdy sposób średnia +/- odchylenie
 for option in options:
     plt.plot(avg_best_ant_dest_fun[options.index(option)])
     plt.plot(avg_best_ant_dest_fun[options.index(option)] + std_best_ant_dest_fun[options.index(option)])
     plt.plot(avg_best_ant_dest_fun[options.index(option)] - std_best_ant_dest_fun[options.index(option)])
-    plt.title(option)
+    plt.legend(["average", "+ standard deviation", "- standard deviation"])
+    plt.title(option[1:])
     plt.show()
 
-# for option in options:
-#     plt.plot(avg_best_ant_in_iter_dest_fun[options.index(option)])
-# plt.show()
-        
-# for option in options:
-#     plt.plot(std_best_ant_dest_fun[options.index(option)])
-# plt.show()
-
-# for option in options:
-#     plt.plot(std_best_ant_in_iter_dest_fun[options.index(option)])
-# plt.show()
-
-# for i in range(10):
-#     plt.plot(best_ant_dest_fun[0][i])
-# plt.show()
-
-# for i in range(10):
-#     plt.plot(best_ant_in_iter_dest_fun[0][i])
-# plt.show()
-
-
-
+# każda metoda z różnicami w feromonach
+n = 0
+for option in options:
+    n += 1
+    plt.plot(avg_best_ant_dest_fun[options.index(option)])
+    if n == 1:
+        plt.title(option[1:])
+    if n == 3:
+        plt.legend(["default", "best_ants_feromones", "density_feromones"])
+        plt.show()
+        n = 0
+    
+# każde feromony z różnymi metodami    
+n = 0
+feromone_types = ["default", "best", "density_feromones"]
+for i in range(3):
+    for j in range(4):
+        plt.plot(avg_best_ant_dest_fun[i + 3*j])
+    plt.title(feromone_types[n])
+    plt.legend(["method_1", "method_2", "method_3", "method_4"])
+    plt.show()
+    n += 1
