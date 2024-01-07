@@ -69,6 +69,8 @@ for option in options:
     plt.plot(avg_best_ant_dest_fun[options.index(option)] - std_best_ant_dest_fun[options.index(option)])
     plt.legend(["average", "+ standard deviation", "- standard deviation"])
     plt.title(option[1:])
+    plt.xlabel("number of iterations")
+    plt.ylabel("destination function value")
     plt.show()
 
 # każda metoda z różnicami w feromonach
@@ -80,6 +82,8 @@ for option in options:
         plt.title(option[1:])
     if n == 3:
         plt.legend(["default", "best_ants_feromones", "density_feromones"])
+        plt.xlabel("number of iterations")
+        plt.ylabel("destination function value")
         plt.show()
         n = 0
     
@@ -91,5 +95,7 @@ for i in range(3):
         plt.plot(avg_best_ant_dest_fun[i + 3*j])
     plt.title(feromone_types[n])
     plt.legend(["method_1", "method_2", "method_3", "method_4"])
+    plt.xlabel("number of iterations")
+    plt.ylabel("destination function value")
     plt.show()
     n += 1
