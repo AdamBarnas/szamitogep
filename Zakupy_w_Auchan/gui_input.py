@@ -16,7 +16,6 @@ def parse_inputs(file):
     return default_dict #zwróci słownik wartości z pliku
 
 
-#def input_constants( GUION = 1 ,mo_default = 0.5, c_l_default = 1, c_f_default = 0, L0_default = 500, F0_default = 100, Ad_default = 1, Afer_default = 4, Evap_default = 0.5, Fero_amount_default = 1000, Iter_default = 10):
 def input_constants( GUION = 1 , default_file = "Zakupy_w_Auchan/defautl_values.txt"):
     #inputs: constants for algorithm, returns dict with given constants or default values
     const_dict = parse_inputs(default_file)
@@ -59,23 +58,4 @@ def input_constants( GUION = 1 , default_file = "Zakupy_w_Auchan/defautl_values.
 
         window.close()
     return const_dict
-
-
-##################################################################################
-
-
-# def show_points(LZ: list[Product]) -> None:
-#     x_coords = []
-#     y_coords = []
-#     for product in LZ:
-#         x_coords.append(product.coords[0])
-#         y_coords.append(product.coords[1])
-#     img = plt.imread("Zakupy_w_Auchan\wymiary.png")
-#     plt.scatter(x_coords, y_coords)
-#     plt.imshow(img)
-#     plt.show()
-#     return None
-
-# TEST: You can call the function with your default value
-
 

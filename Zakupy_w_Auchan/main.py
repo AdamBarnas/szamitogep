@@ -10,8 +10,6 @@ import PySimpleGUI as sg
 from gui_v2 import *
 import os
 
-# r.seed(19216812)
-
 np.set_printoptions(precision=0, floatmode="maxprec")
 CD = const_dict
 GUI_ON = 1

@@ -62,19 +62,7 @@ def plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, bes
 
         else:
             print("FILE PATH NOT A STRING")
-    #plt.show()
     return fig
-
-# def animate(i):
-#     pt = randint(1,9) # grab a random integer to be the next y-value in the animation
-#     x.append(i)
-#     y.append(pt)
-
-#     ax.clear()
-#     ax.plot(x, y)
-#     ax.set_xlim([0,20])
-#     ax.set_ylim([0,10])
-    
 
 def plot_dest_func(best_ant_arr, ax, safe_path = None):
     dest_func_arr = []

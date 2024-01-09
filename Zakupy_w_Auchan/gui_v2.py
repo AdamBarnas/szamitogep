@@ -55,12 +55,6 @@ layout_v1_v3 = [[sg.Radio(text="Version 1", key='next_prod_1', default=const_dic
                 [sg.Text('Beta: '), sg.Input(key='beta', default_text=const_dict['beta'])],
                 [sg.Text('Alpha: '), sg.Input(key='alpha', default_text=const_dict['alpha'])]]
 
-# layout_v2_v4 = [[sg.Radio(text="Version 2 (Dorigo)", key='next_prod_2',default=const_dict['next_prod_2'], group_id=4)],
-#                 [sg.Radio(text="Version 3 (Dorigo, incl. mass)", key='next_prod_4',default=const_dict['next_prod_4'], group_id=4)],
-#                 [sg.Text('Beta: '), sg.Input(key='beta', default_text=const_dict['beta'])],
-#                 [sg.Text('Alpha: '), sg.Input(key='alpha', default_text=const_dict['alpha'])]]
-
-
 layout_calculate =[[sg.Button('RUN', font=('Helvetica', 16))]]
 
 layout_choosing_next_prod = [[sg.Text('Choosing next product [Ver1 or Ver2 or Ver3 or Ver4] (4/4)')],
@@ -68,12 +62,6 @@ layout_choosing_next_prod = [[sg.Text('Choosing next product [Ver1 or Ver2 or Ve
                               [sg.Column(layout_calculate, key='calculate', vertical_alignment='right', justification='right')]]
 
 layout_bottom = [[sg.Button('Back'), sg.Button('Next'), sg.Button('Exit')]]
-#-----------Main layout ----------
-# layout = [[sg.Column(layout_general_settings, key='-COL1-'), \
-#            sg.Column(layout_stop_criterion, key='-COL2-', visible=False), \
-#            sg.Column(layout_feromones, key='-COL3-', visible=False), 
-#            sg.Column(layout_choosing_next_prod, key='-COL4-', visible=False)],
-#            [sg.Frame(layout=layout_bottom, title = " ",vertical_alignment='bottom')]]
 
 
 cols = [[sg.Column(layout_general_settings, key='-COL1-'), \
@@ -83,41 +71,7 @@ cols = [[sg.Column(layout_general_settings, key='-COL1-'), \
 
 layout = [[sg.Frame(layout= cols, title=" ", size=(480,320))],
            [sg.Frame(layout=layout_bottom, title = " ", vertical_alignment='bottom')]]
-#--------------------------------
-# def gui_v2(LZ):
-#     global CD 
-#     window = sg.Window('Test window', layout)
-#     layout_nr = 1
 
-#     while True:
-#         event, values = window.read()
-#         if event in (None, 'Exit'):
-#             break
-#         if event == 'Next':
-#             print(layout_nr)
-#             window[f'-COL{layout_nr}-'].update(visible=False)
-#             if layout_nr < 4:
-#                 layout_nr += 1
-#                 window[f'-COL{layout_nr}-'].update(visible=True)
-#             else:
-#                 window[f'-COL{layout_nr}-'].update(visible=True)
-#         elif event == 'Back':
-#             print(layout_nr)
-#             window[f'-COL{layout_nr}-'].update(visible=False)
-#             if layout_nr > 1:
-#                 layout_nr -= 1
-#                 window[f'-COL{layout_nr}-'].update(visible=True)
-#             else:
-#                 window[f'-COL{layout_nr}-'].update(visible=True)
-#         elif event == 'RUN':
-#             print("RUUUUUUUUUUUUN")
-#             CD = values
-#             best_sol, best_ant_arr, best_ant_in_iter_arr, FM, iter, text = sd.ant_algorithm(LZ)
-
-#     window.close()
-#     return None
-  
-  #----------------------------------------
 
 
 

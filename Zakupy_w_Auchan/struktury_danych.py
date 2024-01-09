@@ -20,33 +20,6 @@ coords_t = tuple[float, float]
 ###  CONSTANTS  ###
 #################################################
 
-# M0 = CD["M0"]
-# C_dist = CD["c_l"]   # destination function distance constant
-# C_fat = CD["c_f"]  # destination function fatigue constant
-# L0 = CD["L0"] # 500  # distance to the shop
-# F0 = CD["F0"] # 100  # fatigue of getting to the shop
-# MMAS_ver = CD["MMAS_ver"]
-# all_leave_fero=CD["all_leave_fero"]
-# best_in_iter_leave_fero=CD["best_in_iter_leave_fero"]
-# Evap = CD["Evap"] #0.8 # feromone evaporation constant
-# Fero_amount = CD["Fero_amount"] #10000000 # feromone amount left on trail segment to be devided by destination function value
-# fero_ant_quantity = CD["fero_ant_quantity"]
-# fero_ant_density = CD["fero_ant_density"]
-# Iter = CD["Iter"] #1000 #number of iterations
-# Stop_max_it=CD["Stop_max_it"]
-# Stop_eps=CD["Stop_eps"]
-# eps=CD["eps"]
-# Stop_threshold=CD["Stop_threshold"]
-# threshold=CD["threshold"]
-# next_prod_1=CD["next_prod_1"]
-# next_prod_2=CD["next_prod_2"]
-# next_prod_3=CD["next_prod_3"]
-# next_prod_4=CD["next_prod_4"]
-# A_dist = CD["A_dist"]   # distance constant
-# A_fer = CD["A_fer"]   # feromone constant
-# beta=CD["beta"]
-# alpha=CD["alpha"]
-
 entry_ID = 0
 entry_coords1 = (7, 765)
 entry_coords2 = (7, 38)
@@ -59,21 +32,6 @@ exit_name = "EXIT"
 
 cartesian = "c"
 pitagorean = "p"
-
-# #shopping list
-# LZ = []
-
-# #state list
-# LS = []
-
-# #decision list
-# DL = []
-
-# #adjacency matrix
-# AM = [[]]
-
-# #feromone matrix
-# FM = [[]]
 
 #################################################
 ###  CLASSES  ###
@@ -485,12 +443,7 @@ def ant_algorithm(LZ: list[Product], CD, folder="tests") -> list[Ant]:
     print("best\n", best_sol) 
     print("Ant: ", best_iter, "   ", best_ant.visited, "iteration: ", i) 
     print(better_list)
-    # print("AM:\n", AM)  
-    # print("FM:\n", FM)
 
-
-    #plt.imshow(FM)
-    #plt.show()
     #summary text for plot:
     text_summary = f"SUMMARY:\nBest road: {best_ant.visited}\nNumber of iterations: {i}\nDest. functio: {best_ant.dest_fun}\nStop criterion:{stop_crierion}\nTime: {end_ACO - start_ACO}\n\n"
     parameters_summary = f"PARAMETERS:\nBasket mass: {M0}\nDestination function distance constant: {C_dist}\n"+ \
