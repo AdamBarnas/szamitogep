@@ -14,7 +14,7 @@ import os
 
 np.set_printoptions(precision=0, floatmode="maxprec")
 CD = const_dict
-GUI_ON = 0
+GUI_ON = 1
 PARSE_ON = 0
 PLOT_ON = 1
 
@@ -34,7 +34,7 @@ def main() -> None:
                 LZ.append(db.get_productinfo(i+1))
             LZ.append(sd.shop_exit)
             best_sol, best_ant_arr, best_ant_in_iter_arr, FM, iter, text = sd.ant_algorithm(LZ, CD, "tests")
-            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=0, show = 0, safe_path="Zakupy_w_Auchan/tests/pictures1")
+            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=0, show = 0)
             if PARSE_ON == 1:
                 base_path = os.path.abspath(os.path.dirname(__file__))
                 filename_parse = os.path.join(base_path, 'tests', 'file6.txt')
@@ -77,7 +77,7 @@ def gui_v2_fnc(db):
                 LZ.append(db.get_productinfo(i+1))
             LZ.append(sd.shop_exit)
             best_sol, best_ant_arr, best_ant_in_iter_arr, FM, iter, text = sd.ant_algorithm(LZ, CD)
-            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=1, show = 1, safe_path="pictures1")
+            fig = plot_DestFunc_FM_Map_Summary(best_ant_arr, best_ant_in_iter_arr, FM, LZ, best_sol, text, animation=1, show = 1)
             
             if PARSE_ON == 1:
                 base_path = os.path.abspath(os.path.dirname(__file__))

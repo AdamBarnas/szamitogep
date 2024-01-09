@@ -1,10 +1,12 @@
 import PySimpleGUI as sg
-
+import os
 
 #------- Parse default inputs from file -------------
-def parse_inputs(file = "Zakupy_w_Auchan/defautl_values.txt" ):
+def parse_inputs(file = "defautl_values.txt"):
+    base_path = os.path.abspath(os.path.dirname(__file__))
+    filename_calls = os.path.join(base_path, file)
     default_dict = {}
-    f = open(file, "r")
+    f = open(filename_calls, "r")
     for line in f:
         line = line.rstrip()
         line_sp = line.split("=")
@@ -14,7 +16,7 @@ def parse_inputs(file = "Zakupy_w_Auchan/defautl_values.txt" ):
             default_dict[line_sp[0]] = float(line_sp[1])
     return default_dict #zwróci słownik wartości z pliku
 
-const_dict = parse_inputs("Zakupy_w_Auchan/defautl_values.txt")
+const_dict = parse_inputs("defautl_values.txt")
 
 #-------- Layouts -----------
 

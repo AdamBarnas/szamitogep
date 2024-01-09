@@ -6,6 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import PySimpleGUI as sg
 import matplotlib
 import numpy as np
+import os
 
 np.set_printoptions(precision=0, floatmode="maxprec")
 
@@ -21,7 +22,9 @@ def show_points(LZ: list[Product], best_sol, ax, safe_path = None) -> ([list[int
         x_coords.append(product.coords[0])
         y_coords.append(product.coords[1])
     ax.plot(x_coords, y_coords, linewidth=5, alpha=0.7)
-    img = plt.imread("Zakupy_w_Auchan\wymiary.png")
+    base_path = os.path.abspath(os.path.dirname(__file__))
+    filename_calls = os.path.join(base_path, "wymiary.png")
+    img = plt.imread(filename_calls)
     ax.scatter(x_coords, y_coords)
     ax.imshow(img)
     ax.set_title("Route of the best ant")
